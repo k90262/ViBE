@@ -47,7 +47,7 @@ conda activate vibe
 
 ### 1.2 Install requirements
 ```
-conda install -c huggingface transformers datasets
+conda install -c huggingface transformers=4.11.3 datasets=1.15.1
 conda install -c pytorch pytorch torchvision cudatoolkit
 conda install scikit-learn
 ```
