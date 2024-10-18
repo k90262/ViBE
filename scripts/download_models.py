@@ -1,6 +1,8 @@
 import sys
 import argparse
 import subprocess as sp
+import pathlib
+import os
 
 from tqdm import tqdm
 
@@ -44,6 +46,7 @@ def parse_args(argv = sys.argv[1:]):
 
 def main(argv = sys.argv[1:]):
 	args = parse_args(argv)
+	script_folder_path = pathlib.Path(__file__).parent.resolve()
 
 	targets = args.db
 	if 'all' in targets:
@@ -56,7 +59,7 @@ def main(argv = sys.argv[1:]):
 		md5sum = FILEID_MAP[model]["MD5SUM"]
 
 		# Download from Google Drive
-		cmd = ["./gdown.sh", file_id, f"{args.o_dir}/{model}.tar.gz"]
+		cmd = [os.path.join(script_folder_path, "gdown.sh"), file_id, f"{args.o_dir}/{model}.tar.gz"]
 		_ = sp.run(cmd)
 
 		# Remove cookies
