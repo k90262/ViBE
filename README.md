@@ -335,6 +335,12 @@ mkdir examples/SARS-CoV-2/preds
 
 ### 4.2 Domain-level classification
 
+> NOTE: If using GPU with lower memory size than author (e.g., NVIDIA GeForce GTX 1650 (4 GB ram)), we can still run it without out-of-memory cuda issue via following change:
+> ```
+> --per_device_batch_size 64 \
+> --num_workers 2
+> ```
+
 ```
 export FINETUNED_MODEL=models/BPDR.250bp
 export DATA_DIR=examples/SARS-CoV-2
