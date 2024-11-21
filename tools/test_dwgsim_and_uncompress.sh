@@ -7,7 +7,7 @@ set -x
 # test and compress data generated from DWGSIM
 #
 # Syntax
-#   ./test_dwgsim_and_uncompress.sh <folder_name_to_save_this_generated_data> <ref_genome_sequces> [number_of_read_pairs] [error_rates] [purpose prefix]
+#   ./test_dwgsim_and_uncompress.sh <ouput_folder_name> <ref_genome_sequces_fasta_file_path> [number_of_read_pairs] [error_rates] [purpose prefix]
 #
 # Usage Case
 #   $ test_dwgsim_and_uncompress.sh test_2024112104_err_rate family_level_training_genomes_sample_3.fasta 10 0.015 dev
