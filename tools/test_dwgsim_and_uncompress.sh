@@ -37,7 +37,7 @@ set -x
 #   Negative reads generated: 10
 #   Total reads generated: 20
 #   
-#   Checking read number from each genome in reference fasta file:
+#   Checking total read number (positive + negative) from each genome in reference fasta file:
 #   ----------------------------
 #         4 NC_001639.1
 #         6 NC_003092.2
@@ -63,6 +63,11 @@ NUM_OF_READ_PAIRS=${3:-10}
 ERROR_RATES=${4:-0.0}
 PURPOSE_STR=${5:-test}
 
+OPTION_OF_NUM_OF_READ_PAIRS="-N ${NUM_OF_READ_PAIRS}"
+if [ $NUM_OF_READ_PAIRS == -1 ]; then
+  OPTION_OF_NUM_OF_READ_PAIRS=""
+fi
+
 OUTPUT_PREFIX=${GIVEN_GENOME_AS_REF}.${PURPOSE_STR}
 mkdir -p ${TESTDATADIR}
 #mkdir tmp
@@ -70,9 +75,9 @@ mkdir -p ${TESTDATADIR}
 # Generate the new test data
 #dwgsim -z 13 -N 10 ${2} ${TESTDATADIR}/example.test	# testing case
 #dwgsim -N 10 ${2} ${TESTDATADIR}/${2}.test	    	# simple case
-dwgsim  -N ${NUM_OF_READ_PAIRS} \
+dwgsim ${OPTION_OF_NUM_OF_READ_PAIRS} \
 	-e ${ERROR_RATES} -E ${ERROR_RATES} \
-	-d 500 -s 50 -r 0.0 -y 0 \
+	-d 500 -s 50 -r 0.0 -y 0 -1 251 -2 251 \
 	${GIVEN_GENOME_AS_REF} ${TESTDATADIR}/${OUTPUT_PREFIX}
 
 
@@ -95,7 +100,7 @@ grep -r "^@" ${OUTPUT_PREFIX}.bwa.read1.fastq | wc -l
 perl -e 'print "Total reads generated: "'
 grep -r "^@" ${OUTPUT_PREFIX}.bfast.fastq | wc -l
 echo
-perl -e 'print "Checking read number from each genome in reference fasta file: \n"'
+perl -e 'print "Checking total read number (positive + negative) from each genome in reference fasta file: \n"'
 perl -e 'print "----------------------------\n"'
 perl -ne 'print "$1\n" if /^@(\w+?\.\d|rand)/' ${OUTPUT_PREFIX}.bfast.fastq \
 	| sort \
