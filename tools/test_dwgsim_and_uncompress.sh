@@ -4,13 +4,18 @@ set -e
 set -x
 
 #
-# test and compress data generated from DWGSIM
+# uncompress and test data generated from DWGSIM
 #
 # Syntax
-#   ./test_dwgsim_and_uncompress.sh <ouput_folder_name> <ref_genome_sequces_fasta_file_path> [number_of_read_pairs] [error_rates] [purpose prefix]
+#   ./test_dwgsim_and_uncompress.sh <ouput_folder_name> <ref_genome_sequces_fasta_file_path> [number_of_read_pairs] [error_rates] [given_a_string_as_purpose_prefix]
 #
-# Usage Case
+# Version
+#   2024121300
+#
+# Usage Case 1
 #   $ test_dwgsim_and_uncompress.sh test_2024112104_err_rate family_level_training_genomes_sample_3.fasta 10 0.015 dev
+#
+# Output 1
 #   + TESTDATADIR=test_2024112104_err_rate
 #   + GIVEN_GENOME_AS_REF=family_level_training_genomes_sample_3.fasta
 #   + NUM_OF_READ_PAIRS=10
@@ -43,7 +48,7 @@ set -x
 #         6 NC_003092.2
 #        10 NC_003436.1
 #   
-# Output
+# Result 1
 #   $ ls -lat test_2024112104_err_rate/
 #   total 24
 #   -rwxrwxrwx 1 ycho ycho 1924 Nov 21 21:17 family_level_training_genomes_sample_3.fasta.dev.bwa.read2.fastq
@@ -56,10 +61,61 @@ set -x
 #   -rwxrwxrwx 1 ycho ycho    0 Nov 21 21:17 family_level_training_genomes_sample_3.fasta.dev.mutations.txt
 #   drwxrwxrwx 1 ycho ycho  512 Nov 21 21:12 .
 #   drwxrwxrwx 1 ycho ycho  512 Nov 21 21:06 ..
+#
+# Usage Case 2
+#  $ test_dwgsim_and_uncompress.sh test_20241213_max_out_number_shorter_2 ex1_shorter_2.fa
+#
+# Output 2
+#  + TESTDATADIR=test_20241213_max_out_number_shorter_2
+#  + GIVEN_GENOME_AS_REF=ex1_shorter_2.fa
+#  + NUM_OF_READ_PAIRS=-1
+#  + ERROR_RATES=0.0
+#  + PURPOSE_STR=test
+#  + OPTION_OF_NUM_OF_READ_PAIRS='-N -1'
+#  + '[' -1 == -1 ']'
+#  + OPTION_OF_NUM_OF_READ_PAIRS=
+#  + OUTPUT_PREFIX=ex1_shorter_2.fa.test
+#  + mkdir -p test_20241213_max_out_number_shorter_2
+#  + dwgsim -e 0.0 -E 0.0 -d 500 -s 50 -r 0.0 -y 0 -1 251 -2 251 ex1_shorter_2.fa test_20241213_max_out_number_shorter_2/ex1_shorter_2.fa.test
+#  [dwgsim_core] seq1 length: 900
+#  [dwgsim_core] 1 sequences, total length: 900
+#  [dwgsim_core] Currently on:
+#  [dwgsim_core] 179
+#  [dwgsim_core] Complete!
+#  + set +x
+#  /mnt/d/Data/ViBE_fine_tune_family_and_genra_data/test_20241213_max_out_number_shorter_2 /mnt/d/Data/ViBE_fine_tune_family_and_genra_data
+#  
+#  Validation
+#  
+#  Paired-end reads generated:
+#  ----------------------------
+#  Positive reads generated: 179
+#  Negative reads generated: 179
+#  Total reads generated: 358
+#  
+#  Checking total read number (positive + negative) from each genome in reference fasta file:
+#  ----------------------------
+#      358 seq1
+#  
+#  /mnt/d/Data/ViBE_fine_tune_family_and_genra_data
+#   
+#  Result 2
+#   $ ls -lat test_20241213_max_out_number_shorter_2
+#   total 444
+#   -rwxrwxrwx 1 ycho ycho  97495 Dec 13 21:45 ex1_shorter_2.fa.test.bwa.read2.fastq
+#   -rwxrwxrwx 1 ycho ycho  97495 Dec 13 21:45 ex1_shorter_2.fa.test.bwa.read1.fastq
+#   -rwxrwxrwx 1 ycho ycho 194274 Dec 13 21:45 ex1_shorter_2.fa.test.bfast.fastq
+#   -rwxrwxrwx 1 ycho ycho    364 Dec 13 21:45 ex1_shorter_2.fa.test.mutations.vcf
+#   -rwxrwxrwx 1 ycho ycho  14146 Dec 13 21:45 ex1_shorter_2.fa.test.bwa.read2.fastq.gz
+#   -rwxrwxrwx 1 ycho ycho  14205 Dec 13 21:45 ex1_shorter_2.fa.test.bwa.read1.fastq.gz
+#   -rwxrwxrwx 1 ycho ycho  25954 Dec 13 21:45 ex1_shorter_2.fa.test.bfast.fastq.gz
+#   -rwxrwxrwx 1 ycho ycho      0 Dec 13 21:45 ex1_shorter_2.fa.test.mutations.txt
+#   drwxrwxrwx 1 ycho ycho    512 Dec 13 21:39 ..
+#   drwxrwxrwx 1 ycho ycho    512 Dec 13 21:23 .
 
 TESTDATADIR=${1};
 GIVEN_GENOME_AS_REF=${2}
-NUM_OF_READ_PAIRS=${3:-10}
+NUM_OF_READ_PAIRS=${3:--1}
 ERROR_RATES=${4:-0.0}
 PURPOSE_STR=${5:-test}
 
@@ -102,7 +158,7 @@ grep -r "^@" ${OUTPUT_PREFIX}.bfast.fastq | wc -l
 echo
 perl -e 'print "Checking total read number (positive + negative) from each genome in reference fasta file: \n"'
 perl -e 'print "----------------------------\n"'
-perl -ne 'print "$1\n" if /^@(\w+?\.\d|rand)/' ${OUTPUT_PREFIX}.bfast.fastq \
+perl -ne 'print "$1\n" if /^@(\w+?\.\d|rand|seq\d)_/' ${OUTPUT_PREFIX}.bfast.fastq \
 	| sort \
 	| uniq -c
 echo
