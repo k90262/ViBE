@@ -1,5 +1,6 @@
 #!/usr/bin/perl -w
 use strict;
+use File::Path qw(make_path);
 
 =pod
 
@@ -193,12 +194,176 @@ B<generate_script_to_run_dwgsim.pl> <B<reference_genome_files_path>>
   Checking total read number (positive + negative) from each genome in reference fasta file:
   ----------------------------
 
+=head2 Usage Case 3 - Simple Run DWGSIM Batchly
+
+=head3 1. Modify Flag First
+
+Update C<my $TEST_AND_UNCOMPRESS = 1;> to C<my $TEST_AND_UNCOMPRESS = 0;>.
+
+=head3 2. Run This Script
+
+  $ generate_script_to_run_dwgsim.pl ../*.fa > generate.sh
+  $ head ./generate.sh
+  #!/bin/bash -x
+  dwgsim -e 0.0 -E 0.0 -d 500 -s 50 -r 0.0 -y 0 -1 251 -2 251 ../ERR3994223.rdrp1.mu.fa ERR3994223.rdrp1/ERR3994223.rdrp1 &> ERR3994223.rdrp1.log
+  dwgsim -e 0.0 -E 0.0 -d 500 -s 50 -r 0.0 -y 0 -1 251 -2 251 ../SRR10402291.rdrp1.mu.fa SRR10402291.rdrp1/SRR10402291.rdrp1 &> SRR10402291.rdrp1.log
+  dwgsim -e 0.0 -E 0.0 -d 500 -s 50 -r 0.0 -y 0 -1 251 -2 251 ../SRR10917299.rdrp1.mu.fa SRR10917299.rdrp1/SRR10917299.rdrp1 &> SRR10917299.rdrp1.log
+  dwgsim -e 0.0 -E 0.0 -d 500 -s 50 -r 0.0 -y 0 -1 251 -2 251 ../SRR12184956.rdrp1.mu.fa SRR12184956.rdrp1/SRR12184956.rdrp1 &> SRR12184956.rdrp1.log
+  dwgsim -e 0.0 -E 0.0 -d 500 -s 50 -r 0.0 -y 0 -1 251 -2 251 ../SRR1324965.rdrp1.mu.fa SRR1324965.rdrp1/SRR1324965.rdrp1 &> SRR1324965.rdrp1.log
+  dwgsim -e 0.0 -E 0.0 -d 500 -s 50 -r 0.0 -y 0 -1 251 -2 251 ../SRR5997671.rdrp1.mu.fa SRR5997671.rdrp1/SRR5997671.rdrp1 &> SRR5997671.rdrp1.log
+  dwgsim -e 0.0 -E 0.0 -d 500 -s 50 -r 0.0 -y 0 -1 251 -2 251 ../SRR6788790.rdrp1.mu.fa SRR6788790.rdrp1/SRR6788790.rdrp1 &> SRR6788790.rdrp1.log
+  dwgsim -e 0.0 -E 0.0 -d 500 -s 50 -r 0.0 -y 0 -1 251 -2 251 ../SRR7507741.rdrp1.mu.fa SRR7507741.rdrp1/SRR7507741.rdrp1 &> SRR7507741.rdrp1.log
+  dwgsim -e 0.0 -E 0.0 -d 500 -s 50 -r 0.0 -y 0 -1 251 -2 251 ../SRR8389791.rdrp1.mu.fa SRR8389791.rdrp1/SRR8389791.rdrp1 &> SRR8389791.rdrp1.log
+  $ ./generate.sh
+  + dwgsim -e 0.0 -E 0.0 -d 500 -s 50 -r 0.0 -y 0 -1 251 -2 251 ../ERR3994223.rdrp1.mu.fa ERR3994223.rdrp1/ERR3994223.rdrp1
+  + dwgsim -e 0.0 -E 0.0 -d 500 -s 50 -r 0.0 -y 0 -1 251 -2 251 ../SRR10402291.rdrp1.mu.fa SRR10402291.rdrp1/SRR10402291.rdrp1
+  + dwgsim -e 0.0 -E 0.0 -d 500 -s 50 -r 0.0 -y 0 -1 251 -2 251 ../SRR10917299.rdrp1.mu.fa SRR10917299.rdrp1/SRR10917299.rdrp1
+  + dwgsim -e 0.0 -E 0.0 -d 500 -s 50 -r 0.0 -y 0 -1 251 -2 251 ../SRR12184956.rdrp1.mu.fa SRR12184956.rdrp1/SRR12184956.rdrp1
+  + dwgsim -e 0.0 -E 0.0 -d 500 -s 50 -r 0.0 -y 0 -1 251 -2 251 ../SRR1324965.rdrp1.mu.fa SRR1324965.rdrp1/SRR1324965.rdrp1
+  + dwgsim -e 0.0 -E 0.0 -d 500 -s 50 -r 0.0 -y 0 -1 251 -2 251 ../SRR5997671.rdrp1.mu.fa SRR5997671.rdrp1/SRR5997671.rdrp1
+  + dwgsim -e 0.0 -E 0.0 -d 500 -s 50 -r 0.0 -y 0 -1 251 -2 251 ../SRR6788790.rdrp1.mu.fa SRR6788790.rdrp1/SRR6788790.rdrp1
+  + dwgsim -e 0.0 -E 0.0 -d 500 -s 50 -r 0.0 -y 0 -1 251 -2 251 ../SRR7507741.rdrp1.mu.fa SRR7507741.rdrp1/SRR7507741.rdrp1
+  + dwgsim -e 0.0 -E 0.0 -d 500 -s 50 -r 0.0 -y 0 -1 251 -2 251 ../SRR8389791.rdrp1.mu.fa SRR8389791.rdrp1/SRR8389791.rdrp1
+  $ ls *
+  ERR3994223.rdrp1.log   SRR10917299.rdrp1.log  SRR1324965.rdrp1.log  SRR6788790.rdrp1.log  SRR8389791.rdrp1.log
+  SRR10402291.rdrp1.log  SRR12184956.rdrp1.log  SRR5997671.rdrp1.log  SRR7507741.rdrp1.log  generate.sh
+  
+  ERR3994223.rdrp1:
+  ERR3994223.rdrp1.bfast.fastq.gz      ERR3994223.rdrp1.bwa.read2.fastq.gz  ERR3994223.rdrp1.mutations.vcf
+  ERR3994223.rdrp1.bwa.read1.fastq.gz  ERR3994223.rdrp1.mutations.txt
+  
+  SRR10402291.rdrp1:
+  SRR10402291.rdrp1.bfast.fastq.gz      SRR10402291.rdrp1.bwa.read2.fastq.gz  SRR10402291.rdrp1.mutations.vcf
+  SRR10402291.rdrp1.bwa.read1.fastq.gz  SRR10402291.rdrp1.mutations.txt
+  
+  SRR10917299.rdrp1:
+  SRR10917299.rdrp1.bfast.fastq.gz      SRR10917299.rdrp1.bwa.read2.fastq.gz  SRR10917299.rdrp1.mutations.vcf
+  SRR10917299.rdrp1.bwa.read1.fastq.gz  SRR10917299.rdrp1.mutations.txt
+  
+  SRR12184956.rdrp1:
+  SRR12184956.rdrp1.bfast.fastq.gz      SRR12184956.rdrp1.bwa.read2.fastq.gz  SRR12184956.rdrp1.mutations.vcf
+  SRR12184956.rdrp1.bwa.read1.fastq.gz  SRR12184956.rdrp1.mutations.txt
+  
+  SRR1324965.rdrp1:
+  SRR1324965.rdrp1.bfast.fastq.gz      SRR1324965.rdrp1.bwa.read2.fastq.gz  SRR1324965.rdrp1.mutations.vcf
+  SRR1324965.rdrp1.bwa.read1.fastq.gz  SRR1324965.rdrp1.mutations.txt
+  
+  SRR5997671.rdrp1:
+  SRR5997671.rdrp1.bfast.fastq.gz      SRR5997671.rdrp1.bwa.read2.fastq.gz  SRR5997671.rdrp1.mutations.vcf
+  SRR5997671.rdrp1.bwa.read1.fastq.gz  SRR5997671.rdrp1.mutations.txt
+  
+  SRR6788790.rdrp1:
+  SRR6788790.rdrp1.bfast.fastq.gz      SRR6788790.rdrp1.bwa.read2.fastq.gz  SRR6788790.rdrp1.mutations.vcf
+  SRR6788790.rdrp1.bwa.read1.fastq.gz  SRR6788790.rdrp1.mutations.txt
+  
+  SRR7507741.rdrp1:
+  SRR7507741.rdrp1.bfast.fastq.gz      SRR7507741.rdrp1.bwa.read2.fastq.gz  SRR7507741.rdrp1.mutations.vcf
+  SRR7507741.rdrp1.bwa.read1.fastq.gz  SRR7507741.rdrp1.mutations.txt
+  
+  SRR8389791.rdrp1:
+  SRR8389791.rdrp1.bfast.fastq.gz      SRR8389791.rdrp1.bwa.read2.fastq.gz  SRR8389791.rdrp1.mutations.vcf
+  SRR8389791.rdrp1.bwa.read1.fastq.gz  SRR8389791.rdrp1.mutations.txt
+  $ head *.log
+  ==> ERR3994223.rdrp1.log <==
+  [dwgsim_core] ERR3994223 length: 1648
+  [dwgsim_core] 1 sequences, total length: 1648
+  [dwgsim_core] Currently on:
+  [dwgsim_core] 328
+  [dwgsim_core] Complete!
+  
+  ==> SRR10402291.rdrp1.log <==
+  [dwgsim_core] SRR10402291 length: 1806
+  [dwgsim_core] SRR10402291 length: 256
+  [dwgsim_core] SRR10402291 length: 235
+  [dwgsim_core] SRR10402291 length: 234
+  [dwgsim_core] SRR10402291 length: 234
+  [dwgsim_core] SRR10402291 length: 234
+  [dwgsim_core] SRR10402291 length: 228
+  [dwgsim_core] SRR10402291 length: 225
+  [dwgsim_core] 8 sequences, total length: 3452
+  [dwgsim_core] Currently on:
+  
+  ==> SRR10917299.rdrp1.log <==
+  [dwgsim_core] SRR10917299 length: 1565
+  [dwgsim_core] SRR10917299 length: 368
+  [dwgsim_core] SRR10917299 length: 257
+  [dwgsim_core] SRR10917299 length: 251
+  [dwgsim_core] SRR10917299 length: 242
+  [dwgsim_core] SRR10917299 length: 238
+  [dwgsim_core] SRR10917299 length: 238
+  [dwgsim_core] SRR10917299 length: 235
+  [dwgsim_core] 8 sequences, total length: 3394
+  [dwgsim_core] Currently on:
+  
+  ==> SRR12184956.rdrp1.log <==
+  [dwgsim_core] SRR12184956 length: 1542
+  [dwgsim_core] SRR12184956 length: 715
+  [dwgsim_core] SRR12184956 length: 681
+  [dwgsim_core] SRR12184956 length: 233
+  [dwgsim_core] SRR12184956 length: 232
+  [dwgsim_core] SRR12184956 length: 227
+  [dwgsim_core] SRR12184956 length: 225
+  [dwgsim_core] 7 sequences, total length: 3855
+  [dwgsim_core] Currently on:
+  [dwgsim_core] 585
+  
+  ==> SRR1324965.rdrp1.log <==
+  [dwgsim_core] SRR1324965 length: 1644
+  [dwgsim_core] SRR1324965 length: 683
+  [dwgsim_core] SRR1324965 length: 660
+  [dwgsim_core] SRR1324965 length: 632
+  [dwgsim_core] 4 sequences, total length: 3619
+  [dwgsim_core] Currently on:
+  [dwgsim_core] 594
+  [dwgsim_core] #3 skip sequence 'SRR1324965' as it is shorter than 650.000000!
+  
+  [dwgsim_core] Complete!
+  
+  ==> SRR5997671.rdrp1.log <==
+  [dwgsim_core] SRR5997671 length: 1494
+  [dwgsim_core] 1 sequences, total length: 1494
+  [dwgsim_core] Currently on:
+  [dwgsim_core] 298
+  [dwgsim_core] Complete!
+  
+  ==> SRR6788790.rdrp1.log <==
+  [dwgsim_core] SRR6788790 length: 1874
+  [dwgsim_core] SRR6788790 length: 240
+  [dwgsim_core] SRR6788790 length: 237
+  [dwgsim_core] SRR6788790 length: 235
+  [dwgsim_core] SRR6788790 length: 232
+  [dwgsim_core] 5 sequences, total length: 2818
+  [dwgsim_core] Currently on:
+  [dwgsim_core] 373
+  [dwgsim_core] #3 skip sequence 'SRR6788790' as it is shorter than 650.000000!
+  [dwgsim_core] #3 skip sequence 'SRR6788790' as it is shorter than 650.000000!
+  
+  ==> SRR7507741.rdrp1.log <==
+  [dwgsim_core] SRR7507741 length: 1821
+  [dwgsim_core] SRR7507741 length: 269
+  [dwgsim_core] SRR7507741 length: 251
+  [dwgsim_core] SRR7507741 length: 249
+  [dwgsim_core] SRR7507741 length: 228
+  [dwgsim_core] 5 sequences, total length: 2818
+  [dwgsim_core] Currently on:
+  [dwgsim_core] 363
+  [dwgsim_core] #3 skip sequence 'SRR7507741' as it is shorter than 650.000000!
+  [dwgsim_core] #3 skip sequence 'SRR7507741' as it is shorter than 650.000000!
+  
+  ==> SRR8389791.rdrp1.log <==
+  [dwgsim_core] SRR8389791 length: 1561
+  [dwgsim_core] 1 sequences, total length: 1561
+  [dwgsim_core] Currently on:
+  [dwgsim_core] 311
+  [dwgsim_core] Complete!
+
 =head1 VERSION
 
-20241220 00
+20241220 01
 
 =cut
 
+my $TEST_AND_UNCOMPRESS = 1;
 my @path_rdrp_files = map { glob($_) } @ARGV;
 # print @path_rdrp_files, $/;
 
@@ -209,9 +374,15 @@ if (@path_rdrp_files > 0) {
 foreach my $reference_genome_path (@path_rdrp_files) {
   my ($genome_label) = $reference_genome_path =~ /(\w+\.rdrp1).mu.fa/;
   my $output_folder  = $genome_label;
-  #my $output_file_prefix = $output_folder . '/' . $genome_label;
-  #my $dwgsim_command = "dwgsim -e 0.0 -E 0.0 -d 500 -s 50 -r 0.0 -y 0 -1 251 -2 251 $reference_genome_path $output_file_prefix &> $output_file_prefix.log";
-  my $test_scrip_command = "test_dwgsim_and_uncompress.sh $output_folder $reference_genome_path &> $output_folder.log";
-  #print "$dwgsim_command$/";
-  print "$test_scrip_command$/";
+
+  if ($TEST_AND_UNCOMPRESS) {
+    my $test_scrip_command = "test_dwgsim_and_uncompress.sh $output_folder $reference_genome_path &> $output_folder.log";
+    print "$test_scrip_command$/";
+  } 
+  else {
+    make_path($output_folder);
+    my $output_file_prefix = $output_folder . '/' . $genome_label;
+    my $dwgsim_command = "dwgsim -e 0.0 -E 0.0 -d 500 -s 50 -r 0.0 -y 0 -1 251 -2 251 $reference_genome_path $output_file_prefix &> $output_folder.log";
+    print "$dwgsim_command$/";
+  }
 }
