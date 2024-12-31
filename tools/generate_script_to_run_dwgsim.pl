@@ -10,7 +10,7 @@ generate_script_to_run_dwgsim.pl - Generate DWGSIM Command / Script to Batch Run
 
 =head1 SYNOPSIS
 
-B<generate_script_to_run_dwgsim.pl> <B<reference_genome_files_path>>
+B<generate_script_to_run_dwgsim.pl> [ -f <folder_label> [ -n <output_seq_num> ] ] <B<reference_genome_files_path>>
 
 =head2 Usage Case 1
 
@@ -357,13 +357,67 @@ Update C<my $TEST_AND_UNCOMPRESS = 1;> to C<my $TEST_AND_UNCOMPRESS = 0;>.
   [dwgsim_core] 311
   [dwgsim_core] Complete!
 
+=head2 Usage Case 4 - choose regex pattern in order to generate script for training data
+
+  $ generate_script_to_run_dwgsim.pl -f training_reads genomes/*/read_level_genomes.fasta
+  #!/bin/bash -x
+  test_dwgsim_and_uncompress.sh Abyssoviridae/training_reads genomes/Abyssoviridae/read_level_genomes.fasta  &> Abyssoviridae/training_reads.log
+  test_dwgsim_and_uncompress.sh Arteriviridae/training_reads genomes/Arteriviridae/read_level_genomes.fasta  &> Arteriviridae/training_reads.log
+  test_dwgsim_and_uncompress.sh Coronaviridae/training_reads genomes/Coronaviridae/read_level_genomes.fasta  &> Coronaviridae/training_reads.log
+  test_dwgsim_and_uncompress.sh Cremegaviridae/training_reads genomes/Cremegaviridae/read_level_genomes.fasta  &> Cremegaviridae/training_reads.log
+  test_dwgsim_and_uncompress.sh Euroniviridae/training_reads genomes/Euroniviridae/read_level_genomes.fasta  &> Euroniviridae/training_reads.log
+  test_dwgsim_and_uncompress.sh Gresnaviridae/training_reads genomes/Gresnaviridae/read_level_genomes.fasta  &> Gresnaviridae/training_reads.log
+  test_dwgsim_and_uncompress.sh Medioniviridae/training_reads genomes/Medioniviridae/read_level_genomes.fasta  &> Medioniviridae/training_reads.log
+  test_dwgsim_and_uncompress.sh Mesoniviridae/training_reads genomes/Mesoniviridae/read_level_genomes.fasta  &> Mesoniviridae/training_reads.log
+  test_dwgsim_and_uncompress.sh Mononiviridae/training_reads genomes/Mononiviridae/read_level_genomes.fasta  &> Mononiviridae/training_reads.log
+  test_dwgsim_and_uncompress.sh Nanghoshaviridae/training_reads genomes/Nanghoshaviridae/read_level_genomes.fasta  &> Nanghoshaviridae/training_reads.log
+  test_dwgsim_and_uncompress.sh Nanhypoviridae/training_reads genomes/Nanhypoviridae/read_level_genomes.fasta  &> Nanhypoviridae/training_reads.log
+  test_dwgsim_and_uncompress.sh Olifoviridae/training_reads genomes/Olifoviridae/read_level_genomes.fasta  &> Olifoviridae/training_reads.log
+  test_dwgsim_and_uncompress.sh Roniviridae/training_reads genomes/Roniviridae/read_level_genomes.fasta  &> Roniviridae/training_reads.log
+  test_dwgsim_and_uncompress.sh Tobaniviridae/training_reads genomes/Tobaniviridae/read_level_genomes.fasta  &> Tobaniviridae/training_reads.log
+
+=head2 Usage Case 5 - choose regex pattern in order to generate script for training data (with seq_num argument -n )
+
+  $ generate_script_to_run_dwgsim.pl -f training_reads -n 2622 genomes/*/read_level_genomes.fasta
+  #!/bin/bash -x
+  test_dwgsim_and_uncompress.sh Abyssoviridae/training_reads genomes/Abyssoviridae/read_level_genomes.fasta 2622 &> Abyssoviridae/training_reads.log
+  test_dwgsim_and_uncompress.sh Arteriviridae/training_reads genomes/Arteriviridae/read_level_genomes.fasta 2622 &> Arteriviridae/training_reads.log
+  test_dwgsim_and_uncompress.sh Coronaviridae/training_reads genomes/Coronaviridae/read_level_genomes.fasta 2622 &> Coronaviridae/training_reads.log
+  test_dwgsim_and_uncompress.sh Cremegaviridae/training_reads genomes/Cremegaviridae/read_level_genomes.fasta 2622 &> Cremegaviridae/training_reads.log
+  test_dwgsim_and_uncompress.sh Euroniviridae/training_reads genomes/Euroniviridae/read_level_genomes.fasta 2622 &> Euroniviridae/training_reads.log
+  test_dwgsim_and_uncompress.sh Gresnaviridae/training_reads genomes/Gresnaviridae/read_level_genomes.fasta 2622 &> Gresnaviridae/training_reads.log
+  test_dwgsim_and_uncompress.sh Medioniviridae/training_reads genomes/Medioniviridae/read_level_genomes.fasta 2622 &> Medioniviridae/training_reads.log
+  test_dwgsim_and_uncompress.sh Mesoniviridae/training_reads genomes/Mesoniviridae/read_level_genomes.fasta 2622 &> Mesoniviridae/training_reads.log
+  test_dwgsim_and_uncompress.sh Mononiviridae/training_reads genomes/Mononiviridae/read_level_genomes.fasta 2622 &> Mononiviridae/training_reads.log
+  test_dwgsim_and_uncompress.sh Nanghoshaviridae/training_reads genomes/Nanghoshaviridae/read_level_genomes.fasta 2622 &> Nanghoshaviridae/training_reads.log
+  test_dwgsim_and_uncompress.sh Nanhypoviridae/training_reads genomes/Nanhypoviridae/read_level_genomes.fasta 2622 &> Nanhypoviridae/training_reads.log
+  test_dwgsim_and_uncompress.sh Olifoviridae/training_reads genomes/Olifoviridae/read_level_genomes.fasta 2622 &> Olifoviridae/training_reads.log
+  test_dwgsim_and_uncompress.sh Roniviridae/training_reads genomes/Roniviridae/read_level_genomes.fasta 2622 &> Roniviridae/training_reads.log
+  test_dwgsim_and_uncompress.sh Tobaniviridae/training_reads genomes/Tobaniviridae/read_level_genomes.fasta 2622 &> Tobaniviridae/training_reads.log
+
 =head1 VERSION
 
-20241220 01
+20241231 00
 
 =cut
 
 my $TEST_AND_UNCOMPRESS = 1;
+my $RDRP_LABEL_REGEX = qr/(\w+\.rdrp1).mu.fa/;
+my $FOLDER_LABEL_REGEX = qr/(\w+\/)\w+.fasta/;
+my $genome_label_regex = $RDRP_LABEL_REGEX;
+my $label_suffix = '';
+my $output_seq_num = '';
+
+if ($ARGV[0] eq '-f') {
+  $genome_label_regex = $FOLDER_LABEL_REGEX;
+  shift;
+  $label_suffix = shift;
+  if ($ARGV[0] eq '-n') {
+    shift;
+    $output_seq_num = shift;
+  }
+}
+
 my @path_rdrp_files = map { glob($_) } @ARGV;
 # print @path_rdrp_files, $/;
 
@@ -371,12 +425,13 @@ if (@path_rdrp_files > 0) {
   print "#!/bin/bash -x$/";
 }
 
+
 foreach my $reference_genome_path (@path_rdrp_files) {
-  my ($genome_label) = $reference_genome_path =~ /(\w+\.rdrp1).mu.fa/;
-  my $output_folder  = $genome_label;
+  my ($genome_label) = $reference_genome_path =~ $genome_label_regex;
+  my $output_folder  = $genome_label.$label_suffix;
 
   if ($TEST_AND_UNCOMPRESS) {
-    my $test_scrip_command = "test_dwgsim_and_uncompress.sh $output_folder $reference_genome_path &> $output_folder.log";
+    my $test_scrip_command = "test_dwgsim_and_uncompress.sh $output_folder $reference_genome_path $output_seq_num &> $output_folder.log";
     print "$test_scrip_command$/";
   } 
   else {
@@ -386,3 +441,37 @@ foreach my $reference_genome_path (@path_rdrp_files) {
     print "$dwgsim_command$/";
   }
 }
+
+__END__
+
+=head1 AUTHORS
+
+Bill Ho E<lt>ycho.bill.lab@gmail.comE<gt>
+
+=head1 COPYRIGHT
+
+Copyright 2024 by Bill Ho E<lt>ycho.bill.lab@gmail.comE<gt>.
+
+This software is released under the MIT license cited below.
+
+=head2 The "MIT" License
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
+
+=cut
