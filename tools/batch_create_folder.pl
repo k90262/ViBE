@@ -101,7 +101,6 @@ batch_create_folder.pl - Create folder batchly for downloading related genomes l
   >NC_035127.1 ,GCF_002210535.1,Arteriviridae,Muarterivirus,Muarterivirus afrigant,"Training Set, Read-level Validation Set"
   
   $ batch_create_folder.pl -s families_of_nidovirales.txt
-  Can't open -s: No such file or directory at /mnt/d/Projects/ViBE/tools/batch_create_folder.pl line 266.
   Create Folder: ./Arteriviridae ...Skipped. Reason:File exists
   + set -e
   + TAXON_NAME=Arteriviridae
@@ -117,6 +116,10 @@ batch_create_folder.pl - Create folder batchly for downloading related genomes l
   /mnt/d/Data/ViBE_fine_tune_family_and_genra_data/family_level/genomes
   ...
 
+=head1 VERSION
+
+20241231 00
+
 =cut
 
 my $FLAG_DOWNLOAG_GENOMES = 0;
@@ -128,9 +131,11 @@ if (@ARGV < 1) {
 } 
 elsif ($ARGV[0] eq '-d') {
   $FLAG_DOWNLOAG_GENOMES = 1;
+  shift;
 }
 elsif ($ARGV[0] eq '-s') {
   $FLAG_SPLIT_GENOMES = 1;
+  shift;
 }
 
 my $orig_cwd = cwd;
