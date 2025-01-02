@@ -357,47 +357,63 @@ Update C<my $TEST_AND_UNCOMPRESS = 1;> to C<my $TEST_AND_UNCOMPRESS = 0;>.
   [dwgsim_core] 311
   [dwgsim_core] Complete!
 
-=head2 Usage Case 4 - choose regex pattern in order to generate script for training data
+=head2 Usage Case 4 - choose regex pattern 'folder_name' (-f) in order to generate script for training data
 
+  $ ls genomes/*/genome_level_validation_genomes.fasta
+  genomes/Abyssoviridae/genome_level_validation_genomes.fasta   genomes/Mesoniviridae/genome_level_validation_genomes.fasta
+  genomes/Arteriviridae/genome_level_validation_genomes.fasta   genomes/Mononiviridae/genome_level_validation_genomes.fasta
+  genomes/Coronaviridae/genome_level_validation_genomes.fasta   genomes/Nanghoshaviridae/genome_level_validation_genomes.fasta
+  genomes/Cremegaviridae/genome_level_validation_genomes.fasta  genomes/Nanhypoviridae/genome_level_validation_genomes.fasta
+  genomes/Euroniviridae/genome_level_validation_genomes.fasta   genomes/Olifoviridae/genome_level_validation_genomes.fasta
+  genomes/Gresnaviridae/genome_level_validation_genomes.fasta   genomes/Roniviridae/genome_level_validation_genomes.fasta
+  genomes/Medioniviridae/genome_level_validation_genomes.fasta  genomes/Tobaniviridae/genome_level_validation_genomes.fasta
   $ generate_script_to_run_dwgsim.pl -f training_reads genomes/*/read_level_genomes.fasta
   #!/bin/bash -x
-  test_dwgsim_and_uncompress.sh Abyssoviridae/training_reads genomes/Abyssoviridae/read_level_genomes.fasta  &> Abyssoviridae/training_reads.log
-  test_dwgsim_and_uncompress.sh Arteriviridae/training_reads genomes/Arteriviridae/read_level_genomes.fasta  &> Arteriviridae/training_reads.log
-  test_dwgsim_and_uncompress.sh Coronaviridae/training_reads genomes/Coronaviridae/read_level_genomes.fasta  &> Coronaviridae/training_reads.log
-  test_dwgsim_and_uncompress.sh Cremegaviridae/training_reads genomes/Cremegaviridae/read_level_genomes.fasta  &> Cremegaviridae/training_reads.log
-  test_dwgsim_and_uncompress.sh Euroniviridae/training_reads genomes/Euroniviridae/read_level_genomes.fasta  &> Euroniviridae/training_reads.log
-  test_dwgsim_and_uncompress.sh Gresnaviridae/training_reads genomes/Gresnaviridae/read_level_genomes.fasta  &> Gresnaviridae/training_reads.log
-  test_dwgsim_and_uncompress.sh Medioniviridae/training_reads genomes/Medioniviridae/read_level_genomes.fasta  &> Medioniviridae/training_reads.log
-  test_dwgsim_and_uncompress.sh Mesoniviridae/training_reads genomes/Mesoniviridae/read_level_genomes.fasta  &> Mesoniviridae/training_reads.log
-  test_dwgsim_and_uncompress.sh Mononiviridae/training_reads genomes/Mononiviridae/read_level_genomes.fasta  &> Mononiviridae/training_reads.log
-  test_dwgsim_and_uncompress.sh Nanghoshaviridae/training_reads genomes/Nanghoshaviridae/read_level_genomes.fasta  &> Nanghoshaviridae/training_reads.log
-  test_dwgsim_and_uncompress.sh Nanhypoviridae/training_reads genomes/Nanhypoviridae/read_level_genomes.fasta  &> Nanhypoviridae/training_reads.log
-  test_dwgsim_and_uncompress.sh Olifoviridae/training_reads genomes/Olifoviridae/read_level_genomes.fasta  &> Olifoviridae/training_reads.log
-  test_dwgsim_and_uncompress.sh Roniviridae/training_reads genomes/Roniviridae/read_level_genomes.fasta  &> Roniviridae/training_reads.log
-  test_dwgsim_and_uncompress.sh Tobaniviridae/training_reads genomes/Tobaniviridae/read_level_genomes.fasta  &> Tobaniviridae/training_reads.log
+  test_dwgsim_and_uncompress.sh Abyssoviridae/training_reads genomes/Abyssoviridae/read_level_genomes.fasta -1 0.0 &> Abyssoviridae/training_reads.log
+  test_dwgsim_and_uncompress.sh Arteriviridae/training_reads genomes/Arteriviridae/read_level_genomes.fasta -1 0.0 &> Arteriviridae/training_reads.log
+  test_dwgsim_and_uncompress.sh Coronaviridae/training_reads genomes/Coronaviridae/read_level_genomes.fasta -1 0.0 &> Coronaviridae/training_reads.log
+  test_dwgsim_and_uncompress.sh Cremegaviridae/training_reads genomes/Cremegaviridae/read_level_genomes.fasta -1 0.0 &> Cremegaviridae/training_reads.log
+  test_dwgsim_and_uncompress.sh Euroniviridae/training_reads genomes/Euroniviridae/read_level_genomes.fasta -1 0.0 &> Euroniviridae/training_reads.log
+  test_dwgsim_and_uncompress.sh Gresnaviridae/training_reads genomes/Gresnaviridae/read_level_genomes.fasta -1 0.0 &> Gresnaviridae/training_reads.log
+  test_dwgsim_and_uncompress.sh Medioniviridae/training_reads genomes/Medioniviridae/read_level_genomes.fasta -1 0.0 &> Medioniviridae/training_reads.log
+  test_dwgsim_and_uncompress.sh Mesoniviridae/training_reads genomes/Mesoniviridae/read_level_genomes.fasta -1 0.0 &> Mesoniviridae/training_reads.log
+  test_dwgsim_and_uncompress.sh Mononiviridae/training_reads genomes/Mononiviridae/read_level_genomes.fasta -1 0.0 &> Mononiviridae/training_reads.log
+  test_dwgsim_and_uncompress.sh Nanghoshaviridae/training_reads genomes/Nanghoshaviridae/read_level_genomes.fasta -1 0.0 &> Nanghoshaviridae/training_reads.log
+  test_dwgsim_and_uncompress.sh Nanhypoviridae/training_reads genomes/Nanhypoviridae/read_level_genomes.fasta -1 0.0 &> Nanhypoviridae/training_reads.log
+  test_dwgsim_and_uncompress.sh Olifoviridae/training_reads genomes/Olifoviridae/read_level_genomes.fasta -1 0.0 &> Olifoviridae/training_reads.log
+  test_dwgsim_and_uncompress.sh Roniviridae/training_reads genomes/Roniviridae/read_level_genomes.fasta -1 0.0 &> Roniviridae/training_reads.log
+  test_dwgsim_and_uncompress.sh Tobaniviridae/training_reads genomes/Tobaniviridae/read_level_genomes.fasta -1 0.0 &> Tobaniviridae/training_reads.log
 
-=head2 Usage Case 5 - choose regex pattern in order to generate script for training data (with seq_num argument -n )
+=head2 Usage Case 5 - choose regex pattern 'folder_name' (-f) in order to generate script for training data (with seq_num argument -n & -e)
 
-  $ generate_script_to_run_dwgsim.pl -f training_reads -n 2622 genomes/*/read_level_genomes.fasta
+  $ ls genomes/*/genome_level_validation_genomes.fasta
+  genomes/Abyssoviridae/genome_level_validation_genomes.fasta   genomes/Mesoniviridae/genome_level_validation_genomes.fasta
+  genomes/Arteriviridae/genome_level_validation_genomes.fasta   genomes/Mononiviridae/genome_level_validation_genomes.fasta
+  genomes/Coronaviridae/genome_level_validation_genomes.fasta   genomes/Nanghoshaviridae/genome_level_validation_genomes.fasta
+  genomes/Cremegaviridae/genome_level_validation_genomes.fasta  genomes/Nanhypoviridae/genome_level_validation_genomes.fasta
+  genomes/Euroniviridae/genome_level_validation_genomes.fasta   genomes/Olifoviridae/genome_level_validation_genomes.fasta
+  genomes/Gresnaviridae/genome_level_validation_genomes.fasta   genomes/Roniviridae/genome_level_validation_genomes.fasta
+  genomes/Medioniviridae/genome_level_validation_genomes.fasta  genomes/Tobaniviridae/genome_level_validation_genomes.fasta
+  $ generate_script_to_run_dwgsim.pl -f validation_reads -n 262 -e 0.015 genomes/*/genome_level_validation_genomes.fasta
   #!/bin/bash -x
-  test_dwgsim_and_uncompress.sh Abyssoviridae/training_reads genomes/Abyssoviridae/read_level_genomes.fasta 2622 &> Abyssoviridae/training_reads.log
-  test_dwgsim_and_uncompress.sh Arteriviridae/training_reads genomes/Arteriviridae/read_level_genomes.fasta 2622 &> Arteriviridae/training_reads.log
-  test_dwgsim_and_uncompress.sh Coronaviridae/training_reads genomes/Coronaviridae/read_level_genomes.fasta 2622 &> Coronaviridae/training_reads.log
-  test_dwgsim_and_uncompress.sh Cremegaviridae/training_reads genomes/Cremegaviridae/read_level_genomes.fasta 2622 &> Cremegaviridae/training_reads.log
-  test_dwgsim_and_uncompress.sh Euroniviridae/training_reads genomes/Euroniviridae/read_level_genomes.fasta 2622 &> Euroniviridae/training_reads.log
-  test_dwgsim_and_uncompress.sh Gresnaviridae/training_reads genomes/Gresnaviridae/read_level_genomes.fasta 2622 &> Gresnaviridae/training_reads.log
-  test_dwgsim_and_uncompress.sh Medioniviridae/training_reads genomes/Medioniviridae/read_level_genomes.fasta 2622 &> Medioniviridae/training_reads.log
-  test_dwgsim_and_uncompress.sh Mesoniviridae/training_reads genomes/Mesoniviridae/read_level_genomes.fasta 2622 &> Mesoniviridae/training_reads.log
-  test_dwgsim_and_uncompress.sh Mononiviridae/training_reads genomes/Mononiviridae/read_level_genomes.fasta 2622 &> Mononiviridae/training_reads.log
-  test_dwgsim_and_uncompress.sh Nanghoshaviridae/training_reads genomes/Nanghoshaviridae/read_level_genomes.fasta 2622 &> Nanghoshaviridae/training_reads.log
-  test_dwgsim_and_uncompress.sh Nanhypoviridae/training_reads genomes/Nanhypoviridae/read_level_genomes.fasta 2622 &> Nanhypoviridae/training_reads.log
-  test_dwgsim_and_uncompress.sh Olifoviridae/training_reads genomes/Olifoviridae/read_level_genomes.fasta 2622 &> Olifoviridae/training_reads.log
-  test_dwgsim_and_uncompress.sh Roniviridae/training_reads genomes/Roniviridae/read_level_genomes.fasta 2622 &> Roniviridae/training_reads.log
-  test_dwgsim_and_uncompress.sh Tobaniviridae/training_reads genomes/Tobaniviridae/read_level_genomes.fasta 2622 &> Tobaniviridae/training_reads.log
+  test_dwgsim_and_uncompress.sh Abyssoviridae/validation_reads genomes/Abyssoviridae/genome_level_validation_genomes.fasta 262 0.015 &> Abyssoviridae/validation_reads.log
+  test_dwgsim_and_uncompress.sh Arteriviridae/validation_reads genomes/Arteriviridae/genome_level_validation_genomes.fasta 262 0.015 &> Arteriviridae/validation_reads.log
+  test_dwgsim_and_uncompress.sh Coronaviridae/validation_reads genomes/Coronaviridae/genome_level_validation_genomes.fasta 262 0.015 &> Coronaviridae/validation_reads.log
+  test_dwgsim_and_uncompress.sh Cremegaviridae/validation_reads genomes/Cremegaviridae/genome_level_validation_genomes.fasta 262 0.015 &> Cremegaviridae/validation_reads.log
+  test_dwgsim_and_uncompress.sh Euroniviridae/validation_reads genomes/Euroniviridae/genome_level_validation_genomes.fasta 262 0.015 &> Euroniviridae/validation_reads.log
+  test_dwgsim_and_uncompress.sh Gresnaviridae/validation_reads genomes/Gresnaviridae/genome_level_validation_genomes.fasta 262 0.015 &> Gresnaviridae/validation_reads.log
+  test_dwgsim_and_uncompress.sh Medioniviridae/validation_reads genomes/Medioniviridae/genome_level_validation_genomes.fasta 262 0.015 &> Medioniviridae/validation_reads.log
+  test_dwgsim_and_uncompress.sh Mesoniviridae/validation_reads genomes/Mesoniviridae/genome_level_validation_genomes.fasta 262 0.015 &> Mesoniviridae/validation_reads.log
+  test_dwgsim_and_uncompress.sh Mononiviridae/validation_reads genomes/Mononiviridae/genome_level_validation_genomes.fasta 262 0.015 &> Mononiviridae/validation_reads.log
+  test_dwgsim_and_uncompress.sh Nanghoshaviridae/validation_reads genomes/Nanghoshaviridae/genome_level_validation_genomes.fasta 262 0.015 &> Nanghoshaviridae/validation_reads.log
+  test_dwgsim_and_uncompress.sh Nanhypoviridae/validation_reads genomes/Nanhypoviridae/genome_level_validation_genomes.fasta 262 0.015 &> Nanhypoviridae/validation_reads.log
+  test_dwgsim_and_uncompress.sh Olifoviridae/validation_reads genomes/Olifoviridae/genome_level_validation_genomes.fasta 262 0.015 &> Olifoviridae/validation_reads.log
+  test_dwgsim_and_uncompress.sh Roniviridae/validation_reads genomes/Roniviridae/genome_level_validation_genomes.fasta 262 0.015 &> Roniviridae/validation_reads.log
+  test_dwgsim_and_uncompress.sh Tobaniviridae/validation_reads genomes/Tobaniviridae/genome_level_validation_genomes.fasta 262 0.015 &> Tobaniviridae/validation_reads.log
 
 =head1 VERSION
 
-20241231 00
+20250102 00
 
 =cut
 
@@ -406,7 +422,8 @@ my $RDRP_LABEL_REGEX = qr/(\w+\.rdrp1).mu.fa/;
 my $FOLDER_LABEL_REGEX = qr/(\w+\/)\w+.fasta/;
 my $genome_label_regex = $RDRP_LABEL_REGEX;
 my $label_suffix = '';
-my $output_seq_num = '';
+my $output_seq_num = '-1';
+my $output_error_rate = '0.0';
 
 if ($ARGV[0] eq '-f') {
   $genome_label_regex = $FOLDER_LABEL_REGEX;
@@ -415,6 +432,10 @@ if ($ARGV[0] eq '-f') {
   if ($ARGV[0] eq '-n') {
     shift;
     $output_seq_num = shift;
+  }
+  if ($ARGV[0] eq '-e') {
+    shift;
+    $output_error_rate = shift;
   }
 }
 
@@ -431,13 +452,14 @@ foreach my $reference_genome_path (@path_rdrp_files) {
   my $output_folder  = $genome_label.$label_suffix;
 
   if ($TEST_AND_UNCOMPRESS) {
-    my $test_scrip_command = "test_dwgsim_and_uncompress.sh $output_folder $reference_genome_path $output_seq_num &> $output_folder.log";
+    my $test_scrip_command = "test_dwgsim_and_uncompress.sh $output_folder $reference_genome_path $output_seq_num $output_error_rate &> $output_folder.log";
     print "$test_scrip_command$/";
   } 
   else {
     make_path($output_folder);
     my $output_file_prefix = $output_folder . '/' . $genome_label;
-    my $dwgsim_command = "dwgsim -e 0.0 -E 0.0 -d 500 -s 50 -r 0.0 -y 0 -1 251 -2 251 $reference_genome_path $output_file_prefix &> $output_folder.log";
+    my $output_seq_num_arg = ($output_seq_num eq '-1') ? '' : "-N $output_seq_num";
+    my $dwgsim_command = "dwgsim $output_seq_num_arg -e $output_error_rate -E $output_error_rate -d 500 -s 50 -r 0.0 -y 0 -1 251 -2 251 $reference_genome_path $output_file_prefix &> $output_folder.log";
     print "$dwgsim_command$/";
   }
 }
