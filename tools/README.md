@@ -1,5 +1,5 @@
 # PREPARING TRAINING DATA FOR CREATING LOWER-LEVEL CLASSIFIER
-- TASKS (family-level case)
+- PREPARE TRAINING DATA TASKS (family-level case)
 	- PREREQUISITES 
 		- INSTALL REQUIRED TOOLS
 			1. [ViBE conda env.](https://github.com/k90262/ViBE?tab=readme-ov-file#11-build-environment)
@@ -156,29 +156,29 @@
 					├── Coronaviridae
 					...
 					```																	
-	4. Try to simulate NGS sequences via DWGSIM with MAXIMUM number from and into  folder/label in which only 1 genome exists. 
-		- Counts:
+	2. Get the MAXIMUM number via the one of class folders included the smallest total genome size. 
+		- Count size for each genome, and we will pick up the smaller one `Cremegaviridae` AND size != 0 for next steps:
 			```
 			$ wc */read_level_genomes.fasta | sort
 			```
-		- Result:
-			```
-				  0       0       0 Abyssoviridae/read_level_genomes.fasta
-				  0       0       0 Gresnaviridae/read_level_genomes.fasta
-				  0       0       0 Mononiviridae/read_level_genomes.fasta
-				  0       0       0 Nanghoshaviridae/read_level_genomes.fasta
-				  0       0       0 Nanhypoviridae/read_level_genomes.fasta
-				  0       0       0 Olifoviridae/read_level_genomes.fasta
-				215     232   15311 Cremegaviridae/read_level_genomes.fasta
-				291     306   20699 Medioniviridae/read_level_genomes.fasta
-				775     816   55142 Euroniviridae/read_level_genomes.fasta
-			   1176    1193   83383 Roniviridae/read_level_genomes.fasta
-			   4054    4189  287551 Mesoniviridae/read_level_genomes.fasta
-			   4727    4902  334888 Arteriviridae/read_level_genomes.fasta
-			   8180    8441  580839 Tobaniviridae/read_level_genomes.fasta
-			  28725   29210 2037236 Coronaviridae/read_level_genomes.fasta
-			  48143   49289 3415049 total
-			```
+			- Result:
+				```
+					  0       0       0 Abyssoviridae/read_level_genomes.fasta
+					  0       0       0 Gresnaviridae/read_level_genomes.fasta
+					  0       0       0 Mononiviridae/read_level_genomes.fasta
+					  0       0       0 Nanghoshaviridae/read_level_genomes.fasta
+					  0       0       0 Nanhypoviridae/read_level_genomes.fasta
+					  0       0       0 Olifoviridae/read_level_genomes.fasta
+					215     232   15311 Cremegaviridae/read_level_genomes.fasta
+					291     306   20699 Medioniviridae/read_level_genomes.fasta
+					775     816   55142 Euroniviridae/read_level_genomes.fasta
+				   1176    1193   83383 Roniviridae/read_level_genomes.fasta
+				   4054    4189  287551 Mesoniviridae/read_level_genomes.fasta
+				   4727    4902  334888 Arteriviridae/read_level_genomes.fasta
+				   8180    8441  580839 Tobaniviridae/read_level_genomes.fasta
+				  28725   29210 2037236 Coronaviridae/read_level_genomes.fasta
+				  48143   49289 3415049 total
+				```
 		- Steps:
 			```
 			$ cd .. 	# family_level/
@@ -240,7 +240,7 @@
 
 				/mnt/d/Data/ViBE_fine_tune_family_and_genra_data_demo/family_level
 				```
-	6. Use this MAXIMUM number as the number of training or validation sequences for each label. Then, simulate all NGS sequences. 
+	3. Use this MAXIMUM number as the number of training sequences for each class. Then, simulate all NGS sequences for each class. 
 		- For exmpale: the MAXIMUM number = 2976
 			```
 			# In family_level/
@@ -252,7 +252,7 @@
 			$ head */training_reads.log
 			$ tail */training_reads.log
 			```
-	7. Prepared validation data set via repeat above steps 
+	4. Prepared validation data set (10% of MAXIMUM number for each class) via repeat similar steps as above
 		- Genome-level 
 			```
 			# In family_level/
@@ -274,7 +274,7 @@
 			$ head */validation_reads_read_level.log
 			$ tail */validation_reads_read_level.log
 			```
-	8. Run ViBE seq2kmer_doc pre-process and ouput csv files, and label those csv for each folder/label. 
+	5. Run ViBE `seq2kmer_doc` pre-process and ouput csv files, and label those csv for each folder/label. 
 		```
 		# In family_level/
 		$ nohup batch_create_folder.pl -p families_of_nidovirales.txt &> batch_preprocess_and_label.log &
@@ -283,7 +283,7 @@
 		$ tail -f batch_preprocess_and_label.log
 		# (Ctrl-C to leave `tail -f` mode)
 		```
-	9. Randomly mix all csv into 1 training or validation set.
+	6. Randomly mix all csv into 3 outputs (.csv) : 1 training set, 1 validation set (genome-level), and 1 read-level validation set.
 		```
 		# In family_level/
 		$ collect_shuff_and_generate_csv_dataset.sh
@@ -295,12 +295,12 @@
 			-rwxrwxrwx 1 ycho ycho  5327910 Jan  8 21:05 validation_reads.dataset.csv*
 			-rwxrwxrwx 1 ycho ycho  9323508 Jan  8 21:05 validation_reads_read_level.dataset.csv*
 			```
-- fine-tune model  
-	- Copy files into GPU server (e.g. 3080Ti)
+- FINE-TUNE - Use Our Data to Fine-Tune ViBE Pre-Trained Model  
+	- Copy files into GPU server (e.g. GPU: 3080Ti, 16G VRAM, git-cloned ViBE in `~/Projects/myViBE`)
 		- For example:
 			```
 			$ ssh ycho@YOUR_SERVER_IP
-			$ mkdir -p ~/Projects/myViBE/examples/fine-tune/family_level_demo
+			$ mkdir -p ~/Projects/myViBE/examples/fine-tune/family_level_demo 
 			$ exit
 			$ scp *.dataset.csv ycho@YOUR_SERVER_IP:~/Projects/myViBE/examples/fine-tune/family_level_demo/.
 			```
@@ -337,6 +337,177 @@
 				--per_device_batch_size 16 \
 				--warmup_ratio 0.25 \
 				--learning_rate 3e-5
+				
+			$ exit	# exit screen
+			$ exit	# exit ssh
 			```
-	- Ref. about program screen saving log
-		- [logging - Save Screen (program) output to a file - Stack Overflow](https://stackoverflow.com/questions/14208001/save-screen-program-output-to-a-file:)
+				- Ref. about program screen saving log
+					- [logging - Save Screen (program) output to a file - Stack Overflow](https://stackoverflow.com/questions/14208001/save-screen-program-output-to-a-file:)
+			- Training result and validation score (genome-level)
+				```
+				***** train metrics *****
+				  epoch                    =        4.0
+				  train_loss               =      0.371
+				  train_runtime            = 1:31:48.89
+				  train_samples            =      23808
+				  train_samples_per_second =     17.287
+				  train_steps_per_second   =       1.08
+				01/13/2025 22:06:46 - INFO - vibe_finetune - *** Evaluate ***
+				[INFO|trainer.py:541] 2025-01-13 22:06:46,609 >> The following columns in the evaluation set  don't have a corresponding argument in `ViBEForSequenceClassification.forward` and have been ignored: forward, backward, seqid.
+				[INFO|trainer.py:2243] 2025-01-13 22:06:46,613 >> ***** Running Evaluation *****
+				[INFO|trainer.py:2245] 2025-01-13 22:06:46,613 >>   Num examples = 2384
+				[INFO|trainer.py:2248] 2025-01-13 22:06:46,613 >>   Batch size = 16
+				100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 149/149 [00:30<00:00,  4.81it/s]
+				***** eval metrics *****
+				  epoch                   =        4.0
+				  eval_AUC                =     0.8559
+				  eval_Accuracy           =     0.5831
+				  eval_F1-score           =     0.5268
+				  eval_loss               =     3.5356
+				  eval_precision          =     0.5217
+				  eval_recall             =     0.5831
+				  eval_runtime            = 0:00:31.71
+				  eval_samples            =       2384
+				  eval_samples_per_second =     75.158
+				  eval_steps_per_second   =      4.697
+				```
+- VALIDATE - Follow `Classification of novel virus subtype` section in paper to test our fine-tuned family-level classifier
+	1. Download SRA data via NCBI SRA toolkit
+		- confirm that we re-trained ViBE without the SARS-CoV-2 reference genome (GCF_009858895) before. (we make it as a genome-level validation set)
+		- prepared docker env. and use SRA toolkit container to download the COVID-19 sample (SRR14403295)
+			- demoe env: WSL2
+			- docker version: Docker Desktop (for using GPU on docker)
+				https://docs.docker.com/desktop/wsl/#turn-on-docker-desktop-wsl-2
+			- SRA toolkit guide (docker)
+				https://github.com/ncbi/sra-tools/wiki/SRA-tools-docker
+				```
+				$ cd ..	# leave family_level folder
+				$ mkdir novel_virus_subtype
+				$ cd novel_virus_subtype/
+				$ docker run -t --rm -v $PWD:/output:rw -w /output ncbi/sra-tools prefetch SRR14403295
+				$ docker run -t --rm -v $PWD:/output:rw -w /output ncbi/sra-tools fasterq-dump -p SRR14403295
+				```
+				- Ref. https://github.com/ncbi/sra-tools/wiki/HowTo:-fasterq-dump
+	2. Get maximun length and minimum length from fastq
+		```
+		# Get the maximum length and the minimum length of reads
+		$ cat SRR14403295_*.fastq | perl -ne 'print $1, "\n" if /^[+]/ and /length=(\d+)/' | sort -un > RR14403295_both.fastq.len.txt
+		$ head -1 RR14403295_both.fastq.len.txt
+		$ tail -1 RR14403295_both.fastq.len.txt
+		# max: 251, min:35
+		```
+	3. ViBE - Data processing (Please [download all ViBE model](https://github.com/k90262/ViBE/tree/tool/batch_create?tab=readme-ov-file#14-install-vibe-and-download-models) first, and go to the `models` folder and unzip `RNA250`. e.g. `tar -zxvf RNA250.tar.gz; tar -zxvf BPDR150.tar.gz`)
+		```
+		$ scp SRR14403295_*.fastq ycho@YOUR_SERVER_IP:~/Projects/myViBE/examples/SARS-CoV-2/.	# upload data into your GPU Server for preprocessing and predicting later
+		$ ssh ycho@YOUR_SERVER_IP
+		$ cd ~/Projects/myViBE
+		$ conda activate vibe
+		$ python scripts/seq2kmer_doc.py \
+			-i examples/SARS-CoV-2/SRR14403295_1.fastq \
+			-p examples/SARS-CoV-2/SRR14403295_2.fastq \
+			-o examples/SARS-CoV-2/SRR14403295.demo.paired.csv \
+			-k 4 \
+			-f fastq \
+			--min-length 200 \
+			--max-length 251
+		$ grep -v 'N' SRR14403295.demo.paired.csv > SRR14403295.demo.clean.paired.csv       	# `... Reads involving ambiguous calls (i.e. N) were removed. Only reads longer than 200 bp were used. `
+		
+		# validation
+		$ wc -l examples/SARS-CoV-2/SRR14403295.demo.clean.paired.csv                        	# line number: 191266 (included header 1 and paired data 191265)
+		```
+	4. ViBE - Domain-level classification
+		```
+		$ mv screenlog.0 screenlog.0.bak.$(date --iso-8601).00	# backup screen log (optional) 
+		$ screen -RUDL                                       	# run screen to avoid connection dropped (optional)
+		$ conda activate vibe
+		$ export FINETUNED_MODEL=models/BPDR.250bp
+		export DATA_DIR=examples/SARS-CoV-2
+		export CACHE_DIR=$DATA_DIR/cached
+		export SAMPLE_FILE=$DATA_DIR/SRR14403295.demo.clean.paired.csv
+		export OUTPUT_DIR=$DATA_DIR/preds
+		export OUTPUT_PREFIX=SRR14403295.domain
+
+		src/vibe predict \
+			--gpus 0 \
+			--model $FINETUNED_MODEL \
+			--sample_file $SAMPLE_FILE \
+			--output_dir $OUTPUT_DIR \
+			--output_prefix $OUTPUT_PREFIX \
+			--cache_dir $CACHE_DIR \
+			--per_device_batch_size 384 \
+			--max_seq_length 504 \
+			--num_workers 20
+		```
+	5. ViBE - Order-level classification
+		- Get records classified as `RNA_viruses` with high confidence score over 0.9.
+			```
+			python scripts/split_data.py \
+				-i examples/SARS-CoV-2/SRR14403295.demo.clean.paired.csv \
+				-p examples/SARS-CoV-2/preds/SRR14403295.domain.txt \
+				-o examples/SARS-CoV-2/ \
+				-c 0.9 \
+				-t RNA_viruses
+			```	
+		- The above command generates `RNA_viruses.cs`v file in the `examples/SARS-CoV-2` directory.
+			```
+			export FINETUNED_MODEL=models/RNA.250bp
+			export DATA_DIR=examples/SARS-CoV-2
+			export CACHE_DIR=$DATA_DIR/cached
+			export SAMPLE_FILE=$DATA_DIR/RNA_viruses.csv
+			export OUTPUT_DIR=$DATA_DIR/preds
+			export OUTPUT_PREFIX=SRR14403295.RNA
+
+			src/vibe predict \
+				--gpus 0 \
+				--model $FINETUNED_MODEL \
+				--sample_file $SAMPLE_FILE \
+				--output_dir $OUTPUT_DIR \
+				--output_prefix $OUTPUT_PREFIX \
+				--cache_dir $CACHE_DIR \
+				--per_device_batch_size 384 \
+				--max_seq_length 504 \
+				--num_workers 20
+			```
+	6. ViBE - Family-level classification
+		- Get records classified as `Nidovirales` with high confidence score over 0.9.
+			```
+			python scripts/split_data.py \
+				-i examples/SARS-CoV-2/RNA_viruses.csv \
+				-p examples/SARS-CoV-2/preds/SRR14403295.RNA.txt \
+				-o examples/SARS-CoV-2/ \
+				-c 0.9 \
+				-t Nidovirales
+			```	
+		- The above command generates `Nidovirales.cs`v file in the `examples/SARS-CoV-2` directory.
+			```
+			export FINETUNED_MODEL=models/family_level_demo.Nidovirales.250bp
+			export DATA_DIR=examples/SARS-CoV-2
+			export CACHE_DIR=$DATA_DIR/cached
+			export SAMPLE_FILE=$DATA_DIR/Nidovirales.csv
+			export OUTPUT_DIR=$DATA_DIR/preds
+			export OUTPUT_PREFIX=SRR14403295.Nidovirales
+
+			src/vibe predict \
+				--gpus 0 \
+				--model $FINETUNED_MODEL \
+				--sample_file $SAMPLE_FILE \
+				--output_dir $OUTPUT_DIR \
+				--output_prefix $OUTPUT_PREFIX \
+				--cache_dir $CACHE_DIR \
+				--per_device_batch_size 384 \
+				--max_seq_length 504 \
+				--num_workers 20
+			```
+		- Exit screen (optional)
+			```
+			$ exit                                                	# exit screen (optional)
+			```
+	7. RESULT: (On-Going, we can compare this result with table in section `Table 2. Classification results for COVID-19 sample by ViBE trained without SARS-CoV-2 reference genome` in the paper)
+		|Taxon name         |No. of seqs. (%)   |No. of seqs. (%) in paper  |
+		|-------------------|-------------------|---------------------------|
+		|RNA viruses (d)    |159668 (83.5%)     |174897 (91.4%)             |
+		|Nidovirales (o)    |?????? (??.?%)     |157667 (82.4%)             |
+		|Coronaviridae (f)  |?????? (??.?%)     |157483 (82.3%)             |
+		|Betacoronavirus (g)|?????? (??.?%)     |156950 (82.1%)             |
+
+	8. Summary (TODO)
