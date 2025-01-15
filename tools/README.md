@@ -8,17 +8,26 @@
 			3. [NCBI Datasets CLI](https://www.ncbi.nlm.nih.gov/datasets/docs/v2/download-and-install/)
 			4. Jim Kent/UCSC tool [faSomeRecords](http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/faSomeRecords)
 				- (Please copy this tool into the folder included in ENV. path. e.g. `~/.local/bin`)
-		- ADD `[your ViBE Project Root]\tools` INTO YOUR ENV. PATH 
-			- For example (in Ubuntu 22.04):
-				1. `vi ~/.bashrc`
-				2. Add line `export PATH="[your ViBE Project Root]/tools:$PATH"` into the bottom of file. (Please replaced `[your ViBE Project Root]` into your real path of ViBE Tools folder)
-			- The result will look like as below in `~/.bashrc`
-				```.bashrc
-				...
-				export PATH="/mnt/d/Projects/DWGSIM:$PATH"
-				export PATH="/mnt/d/Projects/ViBE/tools:$PATH"
-				export PATH="$PATH:/home/ycho/.local/bin"
-				```
+			5. ADD `[your ViBE Project Root]\tools` INTO YOUR ENV. PATH 
+				- For example (in Ubuntu 22.04):
+					1. `vi ~/.bashrc`
+					2. Add line `export PATH="[your ViBE Project Root]/tools:$PATH"` into the bottom of file. (Please replaced `[your ViBE Project Root]` into your real path of ViBE Tools folder)
+			- TIPS
+				- The result may looks like as below in `~/.bashrc`
+					```.bashrc
+					...
+					export PATH="/mnt/d/Projects/DWGSIM:$PATH"
+					export PATH="/mnt/d/Projects/ViBE/tools:$PATH"
+					export PATH="$PATH:/home/ycho/.local/bin"
+					```
+				- Testing your installation via the below commands, and those calls will switch conda env. or will show tool information without any errors:
+					```
+					$ conda activate vibe
+					$ dwgsim -h
+					$ datasets download virus genome taxon -h
+					$ faSomeRecords
+					$ batch_create_folder.pl
+					```
 		- PREPARE 2 INPUT FILES:
 			1. `families_of_nidovirales.txt` - a list of family-level classes (Nidovirales)
 				- for example:
@@ -498,6 +507,15 @@
 				--max_seq_length 504 \
 				--num_workers 20
 			```
+		- Get records classified as `Coronaviridae` with high confidence score over 0.9.
+			```
+			python scripts/split_data.py \
+				-i examples/SARS-CoV-2/Nidovirales.csv \
+				-p examples/SARS-CoV-2/preds/SRR14403295.Nidovirales.txt \
+				-o examples/SARS-CoV-2/ \
+				-c 0.9 \
+				-t Coronaviridae
+			```
 		- Exit screen (optional)
 			```
 			$ exit                                                	# exit screen (optional)
@@ -506,8 +524,8 @@
 		|Taxon name         |No. of seqs. (%)   |No. of seqs. (%) in paper  |
 		|-------------------|-------------------|---------------------------|
 		|RNA viruses (d)    |159668 (83.5%)     |174897 (91.4%)             |
-		|Nidovirales (o)    |?????? (??.?%)     |157667 (82.4%)             |
-		|Coronaviridae (f)  |?????? (??.?%)     |157483 (82.3%)             |
+		|Nidovirales (o)    |141685 (74.1%)     |157667 (82.4%)             |
+		|Coronaviridae (f)  |120715 (63.1%)     |157483 (82.3%)             |
 		|Betacoronavirus (g)|?????? (??.?%)     |156950 (82.1%)             |
 
 	8. Summary (TODO)
