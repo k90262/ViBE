@@ -487,32 +487,38 @@ Result:
 		> Ref. about program screen saving log
 			- [logging - Save Screen (program) output to a file - Stack Overflow](https://stackoverflow.com/questions/14208001/save-screen-program-output-to-a-file:)
 		- Training result and validation score (genome-level)
-			```
+			```log
+			100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 9176/9176 [2:17:50<00:00,  1.11it/s]
+			[INFO|trainer.py:1995] 2025-01-15 23:29:48,373 >> Saving model checkpoint to ./models/family_level.Nidovirales.250bp
+			[INFO|configuration_utils.py:413] 2025-01-15 23:29:48,373 >> Configuration saved in ./models/family_level.Nidovirales.250bp/config.json
+			[INFO|modeling_utils.py:1041] 2025-01-15 23:29:48,626 >> Model weights saved in ./models/family_level.Nidovirales.250bp/pytorch_model.bin
+			[INFO|tokenization_utils_base.py:2033] 2025-01-15 23:29:48,626 >> tokenizer config file saved in ./models/family_level.Nidovirales.250bp/tokenizer_config.json
+			[INFO|tokenization_utils_base.py:2039] 2025-01-15 23:29:48,626 >> Special tokens file saved in ./models/family_level.Nidovirales.250bp/special_tokens_map.json
 			***** train metrics *****
-				epoch                    =        4.0
-				train_loss               =      0.371
-				train_runtime            = 1:31:48.89
-				train_samples            =      23808
-				train_samples_per_second =     17.287
-				train_steps_per_second   =       1.08
-			01/13/2025 22:06:46 - INFO - vibe_finetune - *** Evaluate ***
-			[INFO|trainer.py:541] 2025-01-13 22:06:46,609 >> The following columns in the evaluation set  don't have a corresponding argument in `ViBEForSequenceClassification.forward` and have been ignored: forward, backward, seqid.
-			[INFO|trainer.py:2243] 2025-01-13 22:06:46,613 >> ***** Running Evaluation *****
-			[INFO|trainer.py:2245] 2025-01-13 22:06:46,613 >>   Num examples = 2384
-			[INFO|trainer.py:2248] 2025-01-13 22:06:46,613 >>   Batch size = 16
-			100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 149/149 [00:30<00:00,  4.81it/s]
+			epoch                    =        4.0
+			train_loss               =     0.4068
+			train_runtime            = 2:17:50.58
+			train_samples            =      36696
+			train_samples_per_second =     17.748
+			train_steps_per_second   =      1.109
+			01/15/2025 23:29:48 - INFO - vibe_finetune - *** Evaluate ***
+			[INFO|trainer.py:541] 2025-01-15 23:29:48,632 >> The following columns in the evaluation set  don't have a corresponding argument in `ViBEForSequenceClassification.forward` and have been ignored: seqid, forward, backward.
+			[INFO|trainer.py:2243] 2025-01-15 23:29:48,636 >> ***** Running Evaluation *****
+			[INFO|trainer.py:2245] 2025-01-15 23:29:48,636 >>   Num examples = 2108
+			[INFO|trainer.py:2248] 2025-01-15 23:29:48,636 >>   Batch size = 16
+			100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 132/132 [00:26<00:00,  4.98it/s]
 			***** eval metrics *****
-				epoch                   =        4.0
-				eval_AUC                =     0.8559
-				eval_Accuracy           =     0.5831
-				eval_F1-score           =     0.5268
-				eval_loss               =     3.5356
-				eval_precision          =     0.5217
-				eval_recall             =     0.5831
-				eval_runtime            = 0:00:31.71
-				eval_samples            =       2384
-				eval_samples_per_second =     75.158
-				eval_steps_per_second   =      4.697
+			epoch                   =        4.0
+			eval_AUC                =      0.929
+			eval_Accuracy           =     0.5802
+			eval_F1-score           =     0.4299
+			eval_loss               =     3.9497
+			eval_precision          =     0.4085
+			eval_recall             =     0.7587
+			eval_runtime            = 0:00:27.28
+			eval_samples            =       2108
+			eval_samples_per_second =      77.25
+			eval_steps_per_second   =      4.837
 			```
 ## III. VALIDATE - Follow `Classification of novel virus subtype` section in paper to test our fine-tuned family-level classifier
 
@@ -624,7 +630,7 @@ Result:
 		```	
 	- The above command generates `Nidovirales.cs`v file in the `examples/SARS-CoV-2` directory.
 		```bash
-		$ export FINETUNED_MODEL=models/family_level_demo.Nidovirales.250bp
+		$ export FINETUNED_MODEL=models/family_level.Nidovirales.250bp
 		export DATA_DIR=examples/SARS-CoV-2
 		export CACHE_DIR=$DATA_DIR/cached
 		export SAMPLE_FILE=$DATA_DIR/Nidovirales.csv
@@ -659,8 +665,8 @@ Result:
 	|Taxon name         |No. of seqs. (%)   |No. of seqs. (%) in paper  |
 	|-------------------|-------------------|---------------------------|
 	|RNA viruses (d)    |159668 (83.5%)     |174897 (91.4%)             |
-	|Nidovirales (o)    |141685 (74.1%)     |157667 (82.4%)             |
-	|Coronaviridae (f)  |120715 (63.1%)     |157483 (82.3%)             |
+	|Nidovirales (o)    |141684 (74.1%)     |157667 (82.4%)             |
+	|Coronaviridae (f)  |124201 (64.9%)     |157483 (82.3%)             |
 	|Betacoronavirus (g)|?????? (??.?%)     |156950 (82.1%)             |
-	- Currnet family-level classifier version: 8-class version (skip single-genome-only class in training data)
+	- Currnet family-level classifier version: 14-class version (keep single-genome-only class in training data and mix genome-level-and-read-level in validation data)
 8. Summary (TODO)
