@@ -162,7 +162,7 @@ Overview
 	1. Call _Jim Kent/UCSC tool_ via script `batch_create_folder.pl` with parameter `-s` (means that we split genomes by file `genomes_of_nidovirales.csv` with marks):
 		```bash	
 		$ cd ..	# family_level/genomes
-		$ mv ../genomes_of_nidovirales.csv .
+		$ cp ../genomes_of_nidovirales.csv marked_genomes.csv 
 		$ batch_create_folder.pl -s ../families_of_nidovirales.txt
 		```
 		- current tree structure (via command `tree . -L 2`)
@@ -183,7 +183,19 @@ Overview
 			│   └── read_level_genomes.fasta
 			├── Coronaviridae
 			...
-			```																	
+			```
+		- validate if some of size of _*/genome_level_validation_genomes.fasta_ are corrected or not (via command `ll *`)
+			- For example: size nubmer != 0
+				```
+				...
+				-rwxrwxrwx 1 ycho ycho   1593 Jan 16 08:24 README.md*
+				-rwxrwxrwx 1 ycho ycho  86372 Jan 16 21:35 genome_level_validation_genomes.fasta*
+				-rwxrwxrwx 1 ycho ycho     39 Jan 16 21:35 genome_level_validation_ids.txt*
+				...
+				-rwxrwxrwx 1 ycho ycho 852631 Jan 16 21:35 read_level_genomes.fasta*
+				...
+				```
+			- But it's fine if this class has only 1 genome and it must mark as the training set. (we will move 2 simulate sequences/reads to validation set on STEP 5. )																	
 ### STEP 2. Get the MAXIMUM number via the one of class folders included the smallest total genome size. 
 - Count size for each genome, and we will pick up the smaller one `Nanghoshaviridae` AND size != 0 for next steps:
 	```bash
@@ -345,35 +357,12 @@ It will show the total outputs:
 	>	- Even if 2/262 is smaller than 10% for genome-level validation set requirement, its number is bigger than 1/262.
 	- For example:
 		```bash
-		$ # Abyssoviridae
-		tail -2 Abyssoviridae/training_reads/data.Abyssoviridae.paired.label.csv >> Abyssoviridae/validation_reads/data.Abyssoviridae.paired.label.csv
-		head -n -2 Abyssoviridae/training_reads/data.Abyssoviridae.paired.label.csv > tmp_file && mv tmp_file Abyssoviridae/training_reads/data.Abyssoviridae.paired.label.csv
-		ll Abyssoviridae/*/*.paired.label.csv
-		
-		# Gresnaviridae
-		tail -2 Gresnaviridae/training_reads/data.Gresnaviridae.paired.label.csv >> Gresnaviridae/validation_reads/data.Gresnaviridae.paired.label.csv
-		head -n -2 Gresnaviridae/training_reads/data.Gresnaviridae.paired.label.csv > tmp_file && mv tmp_file Gresnaviridae/training_reads/data.Gresnaviridae.paired.label.csv
-		ll Gresnaviridae/*/*.paired.label.csv
-
-		# Mononiviridae
-		tail -2 Mononiviridae/training_reads/data.Mononiviridae.paired.label.csv >> Mononiviridae/validation_reads/data.Mononiviridae.paired.label.csv
-		head -n -2 Mononiviridae/training_reads/data.Mononiviridae.paired.label.csv > tmp_file && mv tmp_file Mononiviridae/training_reads/data.Mononiviridae.paired.label.csv
-		ll Mononiviridae/*/*.paired.label.csv
-
-		# Nanghoshaviridae
-		tail -2 Nanghoshaviridae/training_reads/data.Nanghoshaviridae.paired.label.csv >> Nanghoshaviridae/validation_reads/data.Nanghoshaviridae.paired.label.csv
-		head -n -2 Nanghoshaviridae/training_reads/data.Nanghoshaviridae.paired.label.csv > tmp_file && mv tmp_file Nanghoshaviridae/training_reads/data.Nanghoshaviridae.paired.label.csv
-		ll Nanghoshaviridae/*/*.paired.label.csv
-
-		# Nanhypoviridae
-		tail -2 Nanhypoviridae/training_reads/data.Nanhypoviridae.paired.label.csv >> Nanhypoviridae/validation_reads/data.Nanhypoviridae.paired.label.csv
-		head -n -2 Nanhypoviridae/training_reads/data.Nanhypoviridae.paired.label.csv > tmp_file && mv tmp_file Nanhypoviridae/training_reads/data.Nanhypoviridae.paired.label.csv
-		ll Nanhypoviridae/*/*.paired.label.csv
-
-		# Olifoviridae
-		tail -2 Olifoviridae/training_reads/data.Olifoviridae.paired.label.csv >> Olifoviridae/validation_reads/data.Olifoviridae.paired.label.csv
-		head -n -2 Olifoviridae/training_reads/data.Olifoviridae.paired.label.csv > tmp_file && mv tmp_file Olifoviridae/training_reads/data.Olifoviridae.paired.label.csv
-		ll Olifoviridae/*/*.paired.label.csv
+		$ move_2_sequences_from_training_set_into_validation_set.sh Abyssoviridae
+		move_2_sequences_from_training_set_into_validation_set.sh Gresnaviridae
+		move_2_sequences_from_training_set_into_validation_set.sh Mononiviridae
+		move_2_sequences_from_training_set_into_validation_set.sh Nanghoshaviridae
+		move_2_sequences_from_training_set_into_validation_set.sh Nanhypoviridae
+		move_2_sequences_from_training_set_into_validation_set.sh Olifoviridae
 		```
 	- Result: (via command `ll */*/*.paired.label.csv`)
 		```
@@ -435,9 +424,10 @@ Result:
 -rwxrwxrwx 1 ycho ycho  5327910 Jan  8 21:05 validation_reads.dataset.csv*
 -rwxrwxrwx 1 ycho ycho  9323508 Jan  8 21:05 validation_reads_read_level.dataset.csv*
 ```
-- _training_reads.dataset.csv_
-- _validation_reads.dataset.csv_
-- _validation_reads_read_level.dataset.csv_
+- _training_reads.dataset.csv_ - training set*
+- _validation_reads.dataset.csv_ - validation set (genome-level)*
+- _validation_reads_read_level.dataset.csv_ validation set (read-level)
+> \* It will be used to fine-tune model
 
 ## II. FINE-TUNE - Use Our Data to Fine-Tune ViBE Pre-Trained Model  
 
@@ -662,11 +652,17 @@ Result:
 		$ exit                                                	# exit screen (optional)
 		```
 7. RESULT: (On-Going, we can compare this result with table in section `Table 2. Classification results for COVID-19 sample by ViBE trained without SARS-CoV-2 reference genome` in the paper)
-	|Taxon name         |No. of seqs. (%)   |No. of seqs. (%) in paper  |
-	|-------------------|-------------------|---------------------------|
-	|RNA viruses (d)    |159668 (83.5%)     |174897 (91.4%)             |
-	|Nidovirales (o)    |141684 (74.1%)     |157667 (82.4%)             |
-	|Coronaviridae (f)  |124201 (64.9%)     |157483 (82.3%)             |
-	|Betacoronavirus (g)|?????? (??.?%)     |156950 (82.1%)             |
+	|Taxon name             |No. of seqs. (%)   |No. of seqs. (%) in paper  |
+	|-----------------------|-------------------|---------------------------|
+	|RNA viruses (d)        |159668 (83.5%)     |174897 (91.4%)             |
+	|Nidovirales (o)        |141684 (74.1%)     |157667 (82.4%)             |
+	|Coronaviridae (f)      |**124201 (64.9%)** |157483 (82.3%)             |
+	|Betacoronavirus (g)    |?????? (??.?%)     |156950 (82.1%)             |
 	- Currnet family-level classifier version: 14-class version (keep single-genome-only class in training data and mix genome-level-and-read-level in validation data)
+	- Confidence cutoff: 0.9.
+	- total SRA reads (cleaned): 191265
+- OTHER RESULT: Just use total SRA reads as input, and feed to family-level classifier of Nidovirales.
+	|Taxon name             |No. of seqs. (%)   |No. of seqs. (%) in paper (pipeline)  |
+	|-----------------------|-------------------|--------------------------------------|
+	|Coronaviridae (f)      |**153951 (80.5%)** |157483 (82.3%)                        |
 8. Summary (TODO)
