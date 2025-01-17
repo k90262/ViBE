@@ -1,0 +1,61 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+actor Bob
+boundary vibe
+participant vibe_finetune.py as vibe_finetune
+
+box transformer v4.11.3
+participant trainer.py as trainer
+end box
+
+Bob -> vibe: $ vibe fine-tune ...
+vibe -> vibe_finetune: run_finetune(args = cmd)
+create trainer
+vibe_finetune -> trainer : trainer = Trainer(model=model,\n\
+                               args=training_args,\n\
+                               train_dataset=train_dataset if training_args.do_train else None,\n\
+                               eval_dataset=eval_dataset if training_args.do_eval else None,\n\
+                               compute_metrics=compute_metrics,\n\
+                               tokenizer=tokenizer,\n\
+                               data_collator=data_collator,)
+
+vibe_finetune -> trainer: train_result = trainer.train(resume_from_checkpoint=checkpoint)
+    loop for step, inputs in enumerate(epoch_iterator):
+        alt if (step + 1) % args.gradient_accumulation_steps == 0 or (\n\
+                                # last step in epoch but step is always smaller than gradient_accumulation_steps\n\
+                                steps_in_epoch <= args.gradient_accumulation_steps\n\
+                                and (step + 1) == steps_in_epoch\n\
+                            )
+            trainer -> trainer
+            note right
+                Gradient clipping
+            end note
+            trainer -> trainer: self._maybe_log_save_evaluate(tr_loss\n, model\n, trial\n, epoch\n, ignore_keys_for_eval)
+            activate trainer
+                alt if self.control.should_evaluate:
+                    trainer -[#red]> trainer : metrics = self.evaluate(ignore_keys=ignore_keys_for_eval)
+                    trainer -> trainer : self._report_to_hp_search(trial, epoch, metrics)
+                end
+                alt if self.control.should_save:
+                    trainer -[#green]> trainer :  self._save_checkpoint(model, trial, metrics=metrics)
+                end
+            deactivate trainer
+        end
+    end
+    trainer -> trainer: self._maybe_log_save_evaluate(tr_loss\n, model\n, trial\n, epoch\n, ignore_keys_for_eval)
+    activate trainer
+        alt if self.control.should_evaluate:
+            trainer -[#red]> trainer : metrics = self.evaluate(ignore_keys=ignore_keys_for_eval)
+            trainer -> trainer : self._report_to_hp_search(trial, epoch, metrics)
+        end
+        alt if self.control.should_save:
+            trainer -[#green]> trainer :  self._save_checkpoint(model, trial, metrics=metrics)
+        end
+    deactivate trainer
+vibe_finetune -[#green]> trainer : trainer.save_model()  # Saves the tokenizer too for easy upload
+...
+vibe_finetune -[#red]> trainer : metrics = trainer.evaluate(eval_dataset=eval_dataset)
+...
+@enduml
