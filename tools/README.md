@@ -1,15 +1,55 @@
-# PREPARING TRAINING DATA FOR CREATING LOWER-LEVEL CLASSIFIER
+# PREPARING TRAINING DATA FOR CREATING LOWER-LEVEL ViBE CLASSIFIER
 
-Overview  
+## Overview
 > See [Figure 2 Workflow of building training and evaluation datasets.](https://academic.oup.com/bib/article/23/4/bbac204/6603436?login=true#366567026) in the paper. 
 
-## I. PREPARE TRAINING DATA TASKS 
+## Overcome
+- Implement a strategy: 
+	- For class which includes only 1 genome, we use this genome for training data set and simulate NGS reads via tool _DWGSIM_. But we just move 2 reads (OR named 2 reads of read-level validation set) into genome-level validation set for fine-tuning model later.
+- So that this approach still makes all class *almost* (around 0.01% to 0.001% difference) the same reads number (training data size) for only-1-genome-in-class case happened.
+- And we still have validation set for those classes which include no genomes on genome-level validation set.
 
-> For Family-Level Case
+## Summarize
+- To generate training data and validation data for fine-tuning ViBE pre-trained model as lower-level classifier
+	1. We should prepare 2 inputs:
+		-  _families_of_nidovirales.txt_ 
+		- _genomes_of_nidovirales.csv_
+	2. Follow our steps.
+	3. Then will get 3 outputs: 
+		- _training data_
+		- _read-level validation data_
+		- _genome-level validation data_
+- To evaluate those data we generated, we used them to fine-tune a pre-trained ViBE model with 2 inputs:
+  - Training data set
+  - Genome-level validation set (may mix some Read-level validation set once this class include only 1 genome)
+- To evaluate those model we fine-tuned with our data, we followed description of section `Classification of novel virus subtype` in ViBE paper: Fine-tune our model without SARS-CoV-2 reference genome (GCF_009858895), then predict COVID-19 sample (SRR14403295).
+	- Results from our family- and genus-level classifier are not good (64.9%, 18.8%) as the paper listed (82.3%, 82.1%). 
+		|Taxon name             |No. of seqs. (%)   |No. of seqs. (%) in paper  |
+		|-----------------------|-------------------|---------------------------|
+		|RNA viruses (d)        |159668 (83.5%)     |174897 (91.4%)             |
+		|Nidovirales (o)        |141684 (74.1%)     |157667 (82.4%)             |
+		|Coronaviridae (f)      |**124201 (64.9%)** |157483 (82.3%)             |
+		|Betacoronavirus (g)    |**35962 (18.8%)**  |156950 (82.1%)             |
+		- Confidence cutoff: 0.9.
+		- total SRA reads (cleaned): 191265
+		- Those biases may depend on 
+			1. which genomes we pick up as training data or validation data at this time.
+			2. on genus-level, we put ~5 unknown genomes as a new class 'Unknown'.
+	- Surprisingly, we can get a better outcome if we put all the SRA data into a lower-level classifier. (Input data do not be filtered out from top-level classifiers)
+		|Taxon name             |No. of seqs. (%)   |No. of seqs. (%) in paper  |
+		|-----------------------|-------------------|---------------------------|
+		|Coronaviridae (f)      |**153951 (80.5%)** |157483 (82.3%)             |
+		- Confidence cutoff: 0.9.
 
-### PREREQUISITES 
+## Methods and Materials
 
-#### A. INSTALL REQUIRED TOOLS
+### I. PREPARE TRAINING DATA TASKS 
+
+Below is a case of creating both of training dataset and validation dataset for fine-tuning a family-level classifier of Nidovirales.
+
+#### PREREQUISITES 
+
+##### A. INSTALL REQUIRED TOOLS
 1. [ViBE conda env.](https://github.com/k90262/ViBE?tab=readme-ov-file#11-build-environment)
 2. [DWGSIM](https://github.com/nh13/DWGSIM) 
 	- (Please add this tool folder into your ENV. path)
@@ -37,7 +77,7 @@ Overview
 >		$ faSomeRecords
 >		$ batch_create_folder.pl
 >		```
-#### B. PREPARE 2 INPUT FILES:
+##### B. PREPARE 2 INPUT FILES:
 1. _families_of_nidovirales.txt_ - a list of family-level classes (Nidovirales)
 	- for example:
 		```bash
@@ -136,7 +176,7 @@ Overview
 			>NC_043487.1 ,GCF_003971765.1,Arteriviridae,Betaarterivirus,Betaarterivirus suid 1,"Training Set, Read-level Validation Set"
 			...
 			```
-### STEP 1. Download genomes from list for each folder/label 
+#### STEP 1. Download genomes from list for each folder/label 
 1.  Call script
 	```bash
 	$ mkdir genomes
@@ -196,7 +236,7 @@ Overview
 				...
 				```
 			- But it's fine if this class has only 1 genome and it must mark as the training set. (we will move 2 simulate sequences/reads to validation set on STEP 5. )																	
-### STEP 2. Get the MAXIMUM number via the one of class folders included the smallest total genome size. 
+#### STEP 2. Get the MAXIMUM number via the one of class folders included the smallest total genome size. 
 - Count size for each genome, and we will pick up the smaller one `Nanghoshaviridae` AND size != 0 for next steps:
 	```bash
 	$ wc */read_level_genomes.fasta | sort
@@ -268,7 +308,7 @@ Overview
 
 		/mnt/d/Data/ViBE_fine_tune_family_and_genra_data_demo/family_level
 		```
-### STEP 3. Use this MAXIMUM number as the number of training sequences for each class. Then, simulate all NGS sequences for each class. 
+#### STEP 3. Use this MAXIMUM number as the number of training sequences for each class. Then, simulate all NGS sequences for each class. 
 - For exmpale: the MAXIMUM number = 2622
 	```bash
 	# In family_level/
@@ -280,7 +320,7 @@ Overview
 	$ head */training_reads.log 	# optional
 	$ tail */training_reads.log
 	```
-### STEP 4. Prepared validation data set (10% of MAXIMUM number for each class) via repeat similar steps as above
+#### STEP 4. Prepared validation data set (10% of MAXIMUM number for each class) via repeat similar steps as above
 - Genome-level 
 	```bash
 	# In family_level/
@@ -302,7 +342,7 @@ Overview
 	$ head */validation_reads_read_level.log
 	$ tail */validation_reads_read_level.log
 	```
-### STEP 5. Run ViBE `seq2kmer_doc` pre-process and ouput csv files, and label those csv for each folder/label. 
+#### STEP 5. Run ViBE `seq2kmer_doc` pre-process and ouput csv files, and label those csv for each folder/label. 
 ```bash
 # In family_level/
 $ nohup batch_create_folder.pl -p families_of_nidovirales.txt &> batch_preprocess_and_label.log &
@@ -409,12 +449,12 @@ It will show the total outputs:
 		-rwxrwxrwx 1 ycho ycho  666030 Jan 15 20:49 Tobaniviridae/validation_reads/data.Tobaniviridae.paired.label.csv*
 		-rwxrwxrwx 1 ycho ycho  665844 Jan 15 20:49 Tobaniviridae/validation_reads_read_level/data.Tobaniviridae.paired.label.csv*
 		```
-### STEP 6. Randomly mix all csv into 3 outputs (.csv) : 1 training set, 1 validation set (genome-level), and 1 read-level validation set.
+#### STEP 6. Randomly mix all csv into 3 outputs (.csv) : 1 training set, 1 validation set (genome-level), and 1 read-level validation set.
 ```bash
 # In family_level/
 $ collect_shuff_and_generate_csv_dataset.sh
 ```
-###  DONE. GET 3 FINAL OUTPUT FILES.
+####  DONE. GET 3 FINAL OUTPUT FILES.
 ```bash
 $ ll *.dataset.csv
 ```
@@ -429,7 +469,7 @@ Result:
 - _validation_reads_read_level.dataset.csv_ validation set (read-level)
 > \* It will be used to fine-tune model
 
-## II. FINE-TUNE - Use Our Data to Fine-Tune ViBE Pre-Trained Model  
+### II. FINE-TUNE - Use Our Data to Fine-Tune ViBE Pre-Trained Model  
 
 - Copy files into GPU server (e.g. GPU: 3080Ti, 16G VRAM, git-cloned ViBE in `~/Projects/myViBE`)
 	- For example:
@@ -510,7 +550,7 @@ Result:
 			eval_samples_per_second =      77.25
 			eval_steps_per_second   =      4.837
 			```
-## III. VALIDATE - Follow `Classification of novel virus subtype` section in paper to test our fine-tuned family-level classifier
+### III. VALIDATE - Follow `Classification of novel virus subtype` section in paper to test our fine-tuned family-level classifier
 
 1. Download SRA data via NCBI SRA toolkit
 	- confirm that we re-trained ViBE without the SARS-CoV-2 reference genome (GCF_009858895) before. (we make it as a genome-level validation set)
@@ -557,7 +597,7 @@ Result:
 	```
 4. ViBE - Domain-level classification
 	```bash
-	$ mv screenlog.0 screenlog.0.bak.$(date --iso-8601).00	# backup screen log (optional) 
+	$ mv screenlog.0 screenlog.0.bak.$(date --iso-8601).01	# backup screen log (optional) 
 	$ screen -RUDL                                       	# run screen to avoid connection dropped (optional) (it will take arround 30 minutes per classifying via 3080Ti)
 	$ conda activate vibe
 	$ export FINETUNED_MODEL=models/BPDR.250bp
@@ -577,6 +617,8 @@ Result:
 		--per_device_batch_size 384 \
 		--max_seq_length 504 \
 		--num_workers 20
+	# Pres `ctrl-a d` to detach session.
+	# re-enter session via command `screen -RUDL`
 	```
 5. ViBE - Order-level classification
 	- Get records classified as `RNA_viruses` with high confidence score over 0.9.
@@ -647,22 +689,58 @@ Result:
 			-c 0.9 \
 			-t Coronaviridae
 		```
+6. ViBE - Genus-level classification (Optional)
+	> **NOTE**: We can follow this wiki steps to generate training data for Genus-level classifier of Coronaviridae. The differece are: (1. create folder `genus-level`, and (2. prepare 2 input `families_of_coronaviridae.txt`, `genomes_of_coronaviridae.csv` 
+	- The above command generates `Coronaviridae.cs`v file in the `examples/SARS-CoV-2` directory.
+		```bash
+		$ export FINETUNED_MODEL=models/genus_level.Coronaviridae.250bp
+		export DATA_DIR=examples/SARS-CoV-2
+		export CACHE_DIR=$DATA_DIR/cached
+		export SAMPLE_FILE=$DATA_DIR/Coronaviridae.csv
+		export OUTPUT_DIR=$DATA_DIR/preds
+		export OUTPUT_PREFIX=SRR14403295.Coronaviridae
+
+		src/vibe predict \
+			--gpus 0 \
+			--model $FINETUNED_MODEL \
+			--sample_file $SAMPLE_FILE \
+			--output_dir $OUTPUT_DIR \
+			--output_prefix $OUTPUT_PREFIX \
+			--cache_dir $CACHE_DIR \
+			--per_device_batch_size 384 \
+			--max_seq_length 504 \
+			--num_workers 20
+		```
+	- Get records classified as `Coronaviridae` with high confidence score over 0.9.
+		```bash
+		$ python scripts/split_data.py \
+			-i examples/SARS-CoV-2/Coronaviridae.csv \
+			-p examples/SARS-CoV-2/preds/SRR14403295.Coronaviridae.txt \
+			-o examples/SARS-CoV-2/ \
+			-c 0.9 \
+			-t Betacoronavirus
+		```
 	- Exit screen (optional)
 		```bash
 		$ exit                                                	# exit screen (optional)
 		```
-7. RESULT: (On-Going, we can compare this result with table in section `Table 2. Classification results for COVID-19 sample by ViBE trained without SARS-CoV-2 reference genome` in the paper)
+8. **RESULT**: We can compare this result with table in section `Table 2. Classification results for COVID-19 sample by ViBE trained without SARS-CoV-2 reference genome` in the paper.
 	|Taxon name             |No. of seqs. (%)   |No. of seqs. (%) in paper  |
 	|-----------------------|-------------------|---------------------------|
 	|RNA viruses (d)        |159668 (83.5%)     |174897 (91.4%)             |
 	|Nidovirales (o)        |141684 (74.1%)     |157667 (82.4%)             |
 	|Coronaviridae (f)      |**124201 (64.9%)** |157483 (82.3%)             |
-	|Betacoronavirus (g)    |?????? (??.?%)     |156950 (82.1%)             |
+	|Betacoronavirus (g)    |**35962 (18.8%)**  |156950 (82.1%)             |
 	- Currnet family-level classifier version: 14-class version (keep single-genome-only class in training data and mix genome-level-and-read-level in validation data)
 	- Confidence cutoff: 0.9.
 	- total SRA reads (cleaned): 191265
-- OTHER RESULT: Just use total SRA reads as input, and feed to family-level classifier of Nidovirales.
-	|Taxon name             |No. of seqs. (%)   |No. of seqs. (%) in paper (pipeline)  |
-	|-----------------------|-------------------|--------------------------------------|
-	|Coronaviridae (f)      |**153951 (80.5%)** |157483 (82.3%)                        |
-8. Summary (TODO)
+- **OTHER RESULT I**: Just use total SRA reads (cleaned) as input, and feed to family-level classifier of Nidovirales.
+	|Taxon name             |No. of seqs. (%)   |No. of seqs. (%) in paper  |
+	|-----------------------|-------------------|---------------------------|
+	|Coronaviridae (f)      |**153951 (80.5%)** |157483 (82.3%)             |
+	- Confidence cutoff: 0.9.
+- **OTHER RESULT II**: Just use total SRA reads (cleaned) as input, and feed to genus-level classifier of Coronaviridae.
+	|Taxon name             |No. of seqs. (%)   |No. of seqs. (%) in paper  |
+	|-----------------------|-------------------|---------------------------|
+	|Betacoronavirus (g)    |**62384 (32.6%)**  |156950 (82.1%)             |
+	- Confidence cutoff: 0.9.
