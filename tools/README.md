@@ -69,6 +69,20 @@ Below is a case of creating both of training dataset and validation dataset for 
 >			export PATH="/mnt/d/Projects/ViBE/tools:$PATH"
 >			export PATH="$PATH:/home/ycho/.local/bin"
 >			```
+			Then, add permission to execute script or program:
+			```
+			# ViBE tools
+			$ cd /mnt/d/Projects/ViBE/tools
+			$ chmod +x *.pl *.sh
+			
+			# DWGSIM
+			$ cd /mnt/d/Projects/DWGSIM
+			$ chmod +x dwgsim
+			
+			# faSomeRecords
+			$ cd /home/ycho/.local/bin
+			$ chmod +x faSomeRecords
+			```
 >	- Testing your installation via the below commands, and those calls will switch conda env. or will show tool information without any errors:
 >		```bash
 >		$ conda activate vibe
