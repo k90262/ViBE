@@ -1,0 +1,6 @@
+Alphacoronavirus
+Betacoronavirus
+Alphapironavirus
+Deltacoronavirus
+Gammacoronavirus
+Unknown
