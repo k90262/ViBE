@@ -65,14 +65,14 @@ Below is a case of creating both of training dataset and validation dataset for 
 		```bash
 		$ cd /usr/local/bin/
 		$ sudo su	# switch to root
-
+		
 		# Download datasets: 
 		$ curl -o datasets 'https://ftp.ncbi.nlm.nih.gov/pub/datasets/command-line/v2/linux-amd64/datasets'
 		# Download dataformat: 
 		$ curl -o dataformat 'https://ftp.ncbi.nlm.nih.gov/pub/datasets/command-line/v2/linux-amd64/dataformat'
 		# Make them executable: 
 		$ chmod +x datasets dataformat
-
+		
 		$ exit  	# exit root
 		```
 4. Jim Kent/UCSC tool [faSomeRecords](http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/faSomeRecords)
@@ -80,12 +80,12 @@ Below is a case of creating both of training dataset and validation dataset for 
 		```bash
 		$ cd /usr/local/bin/
 		$ sudo su	# switch to root
-
+		
 		# Download faSomeRecords: 
 		$ curl -o faSomeRecords 'http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/faSomeRecords'
 		# Make them executable: 
 		$ chmod +x faSomeRecords
-
+		
 		$ exit  	# exit root
 		```
 5. ADD `[your ViBE Project Root]\tools` INTO YOUR ENV. PATH 
@@ -153,10 +153,10 @@ Below is a case of creating both of training dataset and validation dataset for 
 				- Follow below steps to download .fasta file included 152 genomes (those fasta headers are included `accession id`, which will be used to do genome-level or read-level filting later):
 					```markdown
 					# DATA README
-
+					
 					## Dowload web page link (with filter condition: taxid:76804 & SeqType: genome) 
 					[NCBI Virus -> taxon name = Nidovirales](https://www.ncbi.nlm.nih.gov/labs/virus/vssi/#/virus?SeqType_s=Genome&VirusLineage_ss=Nidovirales,%20taxid:76804&utm_source=data-hub)
-
+					
 					## Download steps
 					1. __Select all checkbox of 152 records__
 					2. Click `Download` Button on the page.
@@ -178,10 +178,10 @@ Below is a case of creating both of training dataset and validation dataset for 
 					
 					## Download Date
 					2024.Nov.13
-
+					
 					## Reads Number
 					152 (3.8M)
-
+					
 					## Others
 					- `.fasta` -> Genome reads
 					- `.acc` -> Accession List (Nucleotide)
@@ -192,7 +192,7 @@ Below is a case of creating both of training dataset and validation dataset for 
 			$ cp YOUR_DOWNLOAD_PATH/sequences.fasta .	# copy fasta file into folder family_level/
 			$ echo 'Accession,Assembly,Family,Genus,Species' > genomes_of_nidovirales.csv
 			$ grep '>' sequences.fasta | perl -pe 's/\|/,/g' >> genomes_of_nidovirales.csv
-
+			
 			# validation
 			$ head genomes_of_nidovirales.csv
 			```
@@ -238,7 +238,7 @@ Below is a case of creating both of training dataset and validation dataset for 
 		$ datasets download genome accession --inputfile virus_accession_list.txt
 		$ unzip ncbi_dataset.zip
 		$ find . -name "*fna" ! -name "genomic.fna" -type f | xargs cat > ncbi_dataset/data/genomic.fna
-
+		
 		# validation
 		$ grep -e "^>" ncbi_dataset/data/genomic.fna | wc -l	# 1 genome downloaded
 		```
@@ -283,7 +283,7 @@ Below is a case of creating both of training dataset and validation dataset for 
 #### STEP 2. Get the MAXIMUM number via the one of class folders included the smallest total genome size. 
 - Count size for each genome, and we will pick up the smaller one `Nanghoshaviridae` AND size != 0 for next steps:
 	```bash
-	$ wc */read_level_genomes.fasta | sort
+	$ wc */read_level_genomes.fasta | sort -n
 	```
 	- Result:
 		```
@@ -312,12 +312,12 @@ Below is a case of creating both of training dataset and validation dataset for 
 	
 	# Generate Commands
 	$ generate_script_to_run_dwgsim.pl -f training_reads genomes/*/read_level_genomes.fasta
-				
-	# Just pick up and run the smallest size one (e.g. `Cremegaviridae`) to get the minimum read number (it will be the MAXMUM number and will be used for each class to simulate training reads with the same number) ....
-	$ test_dwgsim_and_uncompress.sh Nanhypoviridae/training_reads genomes/Nanhypoviridae/read_level_genomes.fasta -1 0.0 &> Nanhypoviridae/training_reads.log
-	$ cat Nanhypoviridae/training_reads.log
+	
+	# Just pick up the smallest size one (e.g. `Nanghoshaviridae`), and run to get the minimum read number (it will be the MAXMUM number and will be used for each class to simulate training reads with the same number) ....
+	$ test_dwgsim_and_uncompress.sh Nanghoshaviridae/training_reads genomes/Nanghoshaviridae/read_level_genomes.fasta -1 0.0 &> Nanghoshaviridae/training_reads.log
+	$ cat Nanghoshaviridae/training_reads.log
 	```
-	- Result of `Nanhypoviridae/training_reads.log`. In this case, we can get the generated number: 2622 as our MAXIMUM reads number for each class.
+	- Result of `Nanghoshaviridae/training_reads.log`. In this case, we can get the generated number: 2622 as our MAXIMUM reads number for each class.
 		```log
 		+ TESTDATADIR=Nanghoshaviridae/training_reads
 		+ GIVEN_GENOME_AS_REF=genomes/Nanghoshaviridae/read_level_genomes.fasta
@@ -337,19 +337,19 @@ Below is a case of creating both of training dataset and validation dataset for 
 		[dwgsim_core] Complete!
 		+ set +x
 		/mnt/d/Data/ViBE_fine_tune_family_and_genra_data_demo/family_level/Nanghoshaviridae/training_reads /mnt/d/Data/ViBE_fine_tune_family_and_genra_data_demo/family_level
-
+		
 		Validation
-
+		
 		Paired-end reads generated:
 		----------------------------
 		Positive reads generated: 2622
 		Negative reads generated: 2622
 		Total reads generated: 5244
-
+		
 		Checking total read number (positive + negative) from each genome in reference fasta file:
 		----------------------------
 		5244 NC_046960.1
-
+		
 		/mnt/d/Data/ViBE_fine_tune_family_and_genra_data_demo/family_level
 		```
 #### STEP 3. Use this MAXIMUM number as the number of training sequences for each class. Then, simulate all NGS sequences for each class. 
@@ -357,10 +357,11 @@ Below is a case of creating both of training dataset and validation dataset for 
 	```bash
 	# In family_level/
 	$ generate_script_to_run_dwgsim.pl -f training_reads -n 2622 genomes/*/read_level_genomes.fasta > generate.sh
+	$ chmod +x ./generate.sh
 	$ ./generate.sh
-
+	
 	# validation
-	$ tree . -L 2 --gitignore		# optional
+	$ tree . -L 2 		# optional
 	$ head */training_reads.log 	# optional
 	$ tail */training_reads.log
 	```
@@ -368,10 +369,11 @@ Below is a case of creating both of training dataset and validation dataset for 
 - Genome-level 
 	```bash
 	# In family_level/
-	$ wc genomes/*/genome_level_validation_genomes.fasta | sort 	# just check if each fasta existed
+	$ wc genomes/*/genome_level_validation_genomes.fasta | sort -n	# just check if each fasta existed
 	$ generate_script_to_run_dwgsim.pl -f validation_reads -n 262 -e 0.015 genomes/*/genome_level_validation_genomes.fasta > generate_validation_dataset.sh  	# 10% of 2622 -> 262
+	$ chmod +x ./generate_validation_dataset.sh
 	$ ./generate_validation_dataset.sh
-
+	
 	# validation
 	$ head */validation_reads.log
 	$ tail */validation_reads.log
@@ -380,8 +382,9 @@ Below is a case of creating both of training dataset and validation dataset for 
 	```bash
 	# In family_level/
 	$ generate_script_to_run_dwgsim.pl -f validation_reads_read_level -n 262 -e 0.015 genomes/*/read_level_genomes.fasta > generate_validation_dataset_read_level.sh  	# 10% of 2622 -> 262
+	$ chmod +x ./generate_validation_dataset_read_level.sh
 	$ ./generate_validation_dataset_read_level.sh
-
+	
 	# validation
 	$ head */validation_reads_read_level.log
 	$ tail */validation_reads_read_level.log
