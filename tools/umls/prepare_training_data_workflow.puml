@@ -1,0 +1,33 @@
+@startuml
+'https://plantuml.com/activity-diagram-beta
+
+start
+partition "PREREQUISITES" {
+    :A. INSTALL REQUIRED TOOLS;
+    :B. PREPARE 2 INPUT FILES; <<input>>
+    note right
+      For example - to fine-tune a family-level classifier of //Nidovirales//:
+      1. families_of_nidovirales.txt - a list of family-level classes (Nidovirales)
+      2. genomes_of_nidovirales.csv - a list of genomes of all family-level classes (Nidovirales)
+    end note
+}
+partition "PREPARE TRAINING DATA TASKS" {
+    :STEP 1. Download genomes from list for each folder/label;
+    :STEP 2. Get the MAXIMUM number via the one of class folders included the smallest total genome size.;
+    :STEP 3. Use this MAXIMUM number as the number of training sequences for each class. Then, simulate all NGS sequences for each class.;
+    :STEP 4. Prepared validation data set (10% of MAXIMUM number for each class) via repeat similar steps as above;
+    :STEP 5. Run ViBE //seq2kmer_doc// pre-process and ouput csv files, and label those csv for each folder/label.;
+    :STEP 6. Randomly mix all csv into 3 outputs (.csv) : 1 training set, 1 validation set (genome-level), and 1 read-level validation set.;
+}
+:DONE. GET 3 FINAL OUTPUT FILES.; <<output>>
+note right
+    For example:
+    * training_reads.dataset.csv - training set*
+    * validation_reads.dataset.csv - validation set (genome-level)*
+    * validation_reads_read_level.dataset.csv validation set (read-level)
+    ====
+     * It will be used to fine-tune model
+end note
+stop
+
+@enduml

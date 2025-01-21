@@ -1,7 +1,9 @@
 # PREPARING TRAINING DATA FOR CREATING LOWER-LEVEL ViBE CLASSIFIER
 
-## Overview
-> See [Figure 2 Workflow of building training and evaluation datasets.](https://academic.oup.com/bib/article/23/4/bbac204/6603436?login=true#366567026) in the paper. 
+## Workflow
+![](umls/prepare_training_data_workflow.png)
+- Implementation Logic:  
+	> (See [Figure 2 Workflow of building training and evaluation datasets.](https://academic.oup.com/bib/article/23/4/bbac204/6603436?login=true#366567026) in the paper) 
 
 ## Overcome
 - Implement a strategy: 
