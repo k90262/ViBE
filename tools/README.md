@@ -50,40 +50,68 @@ Below is a case of creating both of training dataset and validation dataset for 
 #### PREREQUISITES 
 
 ##### A. INSTALL REQUIRED TOOLS
-1. [ViBE conda env.](https://github.com/k90262/ViBE?tab=readme-ov-file#11-build-environment)
+1. [ViBE Setup](https://github.com/k90262/ViBE/)
+	- (Please follow this [steps](https://github.com/k90262/ViBE/tree/main?tab=readme-ov-file#1-setup) of `1. Setup` section in ViBE README)
 2. [DWGSIM](https://github.com/nh13/DWGSIM) 
 	- (Please add this tool folder into your ENV. path)
-3. [NCBI Datasets CLI](https://www.ncbi.nlm.nih.gov/datasets/docs/v2/download-and-install/)
+	- OR, on Ubuntu 20.04, we can install via `apt`: 
+		```
+		$ sudo apt install dwgsim
+		```
+3. [NCBI Datasets CLI](https://www.ncbi.nlm.nih.gov/datasets/docs/v2/command-line-tools/download-and-install)
+	- Install on linux via curl ([Ref. link](https://www.ncbi.nlm.nih.gov/datasets/docs/v2/command-line-tools/download-and-install/#linux)):
+		```bash
+		$ cd /usr/local/bin/
+		$ sudo su	# switch to root
+
+		# Download datasets: 
+		$ curl -o datasets 'https://ftp.ncbi.nlm.nih.gov/pub/datasets/command-line/v2/linux-amd64/datasets'
+		# Download dataformat: 
+		$ curl -o dataformat 'https://ftp.ncbi.nlm.nih.gov/pub/datasets/command-line/v2/linux-amd64/dataformat'
+		# Make them executable: 
+		$ chmod +x datasets dataformat
+
+		$ exit  	# exit root
+		```
 4. Jim Kent/UCSC tool [faSomeRecords](http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/faSomeRecords)
-	- (Please copy this tool into the folder included in ENV. path. e.g. `~/.local/bin`)
+	- For example via `curl`
+		```bash
+		$ cd /usr/local/bin/
+		$ sudo su	# switch to root
+
+		# Download faSomeRecords: 
+		$ curl -o faSomeRecords 'http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/faSomeRecords'
+		# Make them executable: 
+		$ chmod +x faSomeRecords
+
+		$ exit  	# exit root
+		```
 5. ADD `[your ViBE Project Root]\tools` INTO YOUR ENV. PATH 
 	- For example (in Ubuntu 22.04):
-		1. `vi ~/.bashrc`
-		2. Add line `export PATH="[your ViBE Project Root]/tools:$PATH"` into the bottom of file. (Please replaced `[your ViBE Project Root]` into your real path of ViBE Tools folder)
+		1. Edit `~/.bashrc` file
+			```bash
+			$ vi ~/.bashrc	# tips: enter `:q` to exit; press `i` to enter edit mode, and press `Esc` to leave edit mode.
+			```
+		2. Add line `export PATH="[your ViBE Project Root]/tools:$PATH"` into the bottom of file. 
+			- (Please replaced `[your ViBE Project Root]` into your real path of ViBE Tools folder)
+			- For example:  
+				The result may looks like as below in `~/.bashrc` 
+				```bash
+				...
+				export PATH="/home/ycho/Projects/myViBE/ools:$PATH"
+				```
+				Then, add permission to execute script or rogram:
+				```bash
+				# ViBE tools
+				$ cd /home/ycho/Projects/myViBE/tools
+				$ chmod +x *.pl *.sh
+				```
+		3. Apply new settings (or just re-login account)
+			```bash
+			$ source ~/.bashrc
+			```
 > **TIPS**
->	- The result may looks like as below in `~/.bashrc` (if you update locally)
->		- For example:
->			```bash
->			...
->			export PATH="/mnt/d/Projects/DWGSIM:$PATH"
->			export PATH="/mnt/d/Projects/ViBE/tools:$PATH"
->			export PATH="$PATH:/home/ycho/.local/bin"
->			```
-			Then, add permission to execute script or program:
-			```
-			# ViBE tools
-			$ cd /mnt/d/Projects/ViBE/tools
-			$ chmod +x *.pl *.sh
-			
-			# DWGSIM
-			$ cd /mnt/d/Projects/DWGSIM
-			$ chmod +x dwgsim
-			
-			# faSomeRecords
-			$ cd /home/ycho/.local/bin
-			$ chmod +x faSomeRecords
-			```
->	- Testing your installation via the below commands, and those calls will switch conda env. or will show tool information without any errors:
+>	- Finally, PLEASE test your installation via the below commands. Those calls will switch conda env. or will show tool information without any errors:
 >		```bash
 >		$ conda activate vibe
 >		$ dwgsim -h
