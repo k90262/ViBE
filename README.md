@@ -41,8 +41,8 @@ e.g. batch size 2,560 = 2 devices * 32 samples/device * 40 steps
 ### 1.1 Build environment
 ```
 conda update conda (optional)
-conda create -n vibe python=3.6
-conda activate vibe
+conda create -n vibe37 python=3.7
+conda activate vibe37
 ```
 
 ### 1.2 Install requirements

@@ -58,6 +58,17 @@ require_version("scikit-learn>=0.24", "To fix: conda install scikit-learn")
 
 logger = logging.getLogger(__name__)
 
+#https://github.com/huggingface/transformers/issues/17971
+class TrainingArgumentsWithMPSSupport(TrainingArguments):
+
+    @property
+    def device(self) -> torch.device:
+        if torch.cuda.is_available():
+            return torch.device("cuda")
+        elif torch.backends.mps.is_available():
+            return torch.device("mps")
+        else:
+            return torch.device("cpu")
 
 @dataclass
 class DataTrainingArguments:
@@ -159,7 +170,8 @@ def run_predict(args = None):
 
     args = args if args else sys.argv[1:]
 
-    parser = HfArgumentParser((ModelArguments, DataTrainingArguments, TrainingArguments))
+    parser = HfArgumentParser((ModelArguments, DataTrainingArguments, TrainingArgumentsWithMPSSupport))
+    # parser = HfArgumentParser((ModelArguments, DataTrainingArguments, TrainingArguments))
     if len(args) == 1 and args[0].endswith(".json"):
         # If we pass only one argument to the script and it's the path to a json file,
         # let's parse it to get our arguments.
